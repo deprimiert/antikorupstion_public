@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useGameStore } from './store/gameStore'
 import { useUI } from './store/uiStore'
 import { useT } from './i18n'
-import { SCENARIOS } from './data/scenarios'
+import { SCENARIOS, TOTAL_ACTS, actOf } from './data/scenarios'
 import Intro from './components/Intro'
 import Scene from './components/Scene'
 import Feedback from './components/Feedback'
@@ -16,6 +16,7 @@ import Toolbar from './components/Toolbar'
 export default function App() {
   const phase = useGameStore((s) => s.phase)
   const sceneIndex = useGameStore((s) => s.sceneIndex)
+  const currentScenarioId = useGameStore((s) => s.currentScenarioId)
   const hydrate = useUI((s) => s.hydrate)
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function App() {
   return (
     <div className="relative min-h-[100dvh] bg-ink-950 text-ink-100 grain-overlay vignette">
       <div className="relative z-10 flex min-h-[100dvh] flex-col">
-        <Header phase={phase} sceneIndex={sceneIndex} />
+        <Header phase={phase} currentScenarioId={currentScenarioId} />
 
         <main className="flex-1 w-full">
           <div className="mx-auto w-full max-w-6xl px-5 md:px-10 lg:px-14 py-6 md:py-10">
@@ -41,20 +42,20 @@ export default function App() {
                   <Intro />
                 </motion.div>
               )}
-              {phase === 'scene' && (
+              {phase === 'scene' && currentScenarioId && SCENARIOS[currentScenarioId] && (
                 <motion.div
-                  key={`scene-${sceneIndex}`}
+                  key={`scene-${sceneIndex}-${currentScenarioId}`}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
                   transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <Scene scenario={SCENARIOS[sceneIndex]} />
+                  <Scene scenario={SCENARIOS[currentScenarioId]} />
                 </motion.div>
               )}
               {phase === 'feedback' && (
                 <motion.div
-                  key={`feedback-${sceneIndex}`}
+                  key={`feedback-${sceneIndex}-${currentScenarioId}`}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
@@ -95,9 +96,10 @@ export default function App() {
   )
 }
 
-function Header({ phase, sceneIndex }) {
+function Header({ phase, currentScenarioId }) {
   const t = useT()
   const show = phase === 'scene' || phase === 'feedback'
+  const actNumber = currentScenarioId ? actOf(currentScenarioId) : 1
   return (
     <header className="relative z-10 border-b border-ink-800/70 bg-ink-950/80 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-5 md:px-10 lg:px-14 py-3.5 md:py-4">
@@ -115,7 +117,7 @@ function Header({ phase, sceneIndex }) {
 
         <div className="flex items-center gap-2 md:gap-4 shrink-0">
           {show && <StatsBar />}
-          <ProgressRail total={SCENARIOS.length} current={sceneIndex} visible={show} />
+          <ProgressRail total={TOTAL_ACTS} current={actNumber - 1} visible={show} />
           <Toolbar />
         </div>
       </div>

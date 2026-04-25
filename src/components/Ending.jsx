@@ -129,7 +129,17 @@ export default function Ending() {
               color="bg-accent"
               tone="text-accent"
             />
+            <StatRow
+              label={t('ui.stats.reputation')}
+              value={stats.reputation ?? 50}
+              color="bg-ink-300"
+              tone="text-ink-100"
+              hidden
+            />
           </ul>
+          <p className="mt-4 text-[11px] font-mono uppercase tracking-[0.22em] text-ink-500">
+            {t('ui.ending.reputationReveal')}
+          </p>
         </div>
 
         <div className="rounded-[2.5rem] border border-ink-800 bg-ink-900/70 p-6 md:p-8 shadow-card shadow-inset">
@@ -171,11 +181,18 @@ export default function Ending() {
   )
 }
 
-function StatRow({ label, value, color, tone }) {
+function StatRow({ label, value, color, tone, hidden }) {
   return (
     <li>
       <div className="flex items-center justify-between">
-        <span className="text-sm text-ink-300">{label}</span>
+        <span className="text-sm text-ink-300 inline-flex items-center gap-2">
+          {label}
+          {hidden && (
+            <span className="rounded-full border border-ink-700 bg-ink-800/80 px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.22em] text-ink-500">
+              hidden
+            </span>
+          )}
+        </span>
         <span className={`font-mono text-base font-semibold tabular-nums ${tone}`}>
           {value}
           <span className="text-ink-500 text-xs">/100</span>

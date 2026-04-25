@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
 import { useT } from '../i18n'
-import { findChainPrevChoice, SCENARIOS } from '../data/scenarios'
+import { findChainPrevChoice, TOTAL_ACTS, actOf } from '../data/scenarios'
 import Timer from './Timer'
 import Choices from './Choices'
 
@@ -11,7 +11,6 @@ const DEFAULT_TIMER = 40
 export default function Scene({ scenario }) {
   const choose = useGameStore((s) => s.choose)
   const timeoutFn = useGameStore((s) => s.timeout)
-  const sceneIndex = useGameStore((s) => s.sceneIndex)
   const history = useGameStore((s) => s.history)
   const t = useT()
   const [locked, setLocked] = useState(false)
@@ -36,17 +35,21 @@ export default function Scene({ scenario }) {
     choose(choice)
   }
 
-  // Chain support: if scenario.chainPrev, swap narrator based on previous choice id.
+  // Branching narrator: подменяем текст исходя из id+type последнего выбора игрока.
+  // Сначала ищем по `narratorByPrev.<choiceId>` (точное совпадение по предыдущему ответу),
+  // потом fallback по типу `narratorByType.<type>` (briber/principled/silent…),
+  // иначе — общий `narrator`.
   let narrator = t(`scenarios.${scenario.id}.narrator`)
-  if (scenario.chainPrev) {
-    const prev = findChainPrevChoice(history, scenario.chainPrev)
-    if (prev) {
-      const swapped = t(`scenarios.${scenario.id}.narratorByPrev.${prev.choiceId}`)
-      // useT returns the key string when not found — guard against that.
-      const expectedFallback = `scenarios.${scenario.id}.narratorByPrev.${prev.choiceId}`
-      if (swapped && swapped !== expectedFallback) {
-        narrator = swapped
-      }
+  const prev = history.length > 0 ? history[history.length - 1] : null
+  if (prev) {
+    const byChoiceKey = `scenarios.${scenario.id}.narratorByPrev.${prev.choiceId}`
+    const byChoice = t(byChoiceKey)
+    if (byChoice && byChoice !== byChoiceKey) {
+      narrator = byChoice
+    } else {
+      const byTypeKey = `scenarios.${scenario.id}.narratorByType.${prev.type}`
+      const byType = t(byTypeKey)
+      if (byType && byType !== byTypeKey) narrator = byType
     }
   }
 
@@ -55,7 +58,7 @@ export default function Scene({ scenario }) {
   const title = t(`scenarios.${scenario.id}.title`)
   const quote = t(`scenarios.${scenario.id}.quote`)
   const realStoryNote = t(`scenarios.${scenario.id}.realStoryNote`)
-  const sceneCounter = t('ui.scene.sceneOf', { n: sceneIndex + 1, total: SCENARIOS.length })
+  const sceneCounter = t('ui.scene.sceneOf', { n: actOf(scenario.id), total: TOTAL_ACTS })
 
   return (
     <div className="grid grid-cols-12 gap-x-6 gap-y-8">

@@ -1,15 +1,15 @@
 import { create } from 'zustand'
-import { SCENARIOS } from '../data/scenarios'
+import { SCENARIOS, START_SCENARIO_ID, pickNextScenarioId } from '../data/scenarios'
 import { computeEnding } from '../data/endings'
 
-const INITIAL_STATS = { integrity: 50, money: 20, risk: 10 }
+// Reputation — 4-я скрытая стата. В StatsBar её нет, открывается только в финале.
+const INITIAL_STATS = { integrity: 50, money: 20, risk: 10, reputation: 50 }
 
-// Behavior tags: track player patterns for "memory system"
 const TAG_RULES = [
-  { tag: 'briber',       when: (c) => c.type === 'shortcut' && (c.deltas.money > 0 || c.deltas.integrity < -10) },
-  { tag: 'whistleblower',when: (c) => c.type === 'risky-halol' },
-  { tag: 'silent',       when: (c) => c.type === 'gray' },
-  { tag: 'principled',   when: (c) => c.type === 'halol' },
+  { tag: 'briber',        when: (c) => c.type === 'shortcut' && (c.deltas.money > 0 || c.deltas.integrity < -10) },
+  { tag: 'whistleblower', when: (c) => c.type === 'risky-halol' },
+  { tag: 'silent',        when: (c) => c.type === 'gray' },
+  { tag: 'principled',    when: (c) => c.type === 'halol' },
 ]
 
 function computeTags(history) {
@@ -20,7 +20,6 @@ function computeTags(history) {
       if (rule.when(h)) counts[rule.tag]++
     }
   }
-  // Return the dominant tag (most frequent behavior)
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1])
   return {
     dominant: sorted[0][1] > 0 ? sorted[0][0] : 'neutral',
@@ -32,33 +31,42 @@ const clamp = (n) => Math.max(0, Math.min(100, n))
 
 function applyDeltas(stats, deltas) {
   return {
-    integrity: clamp(stats.integrity + (deltas.integrity || 0)),
-    money: clamp(stats.money + (deltas.money || 0)),
-    risk: clamp(stats.risk + (deltas.risk || 0)),
+    integrity:  clamp(stats.integrity  + (deltas.integrity  || 0)),
+    money:      clamp(stats.money      + (deltas.money      || 0)),
+    risk:       clamp(stats.risk       + (deltas.risk       || 0)),
+    reputation: clamp(stats.reputation + (deltas.reputation || 0)),
   }
 }
 
-// Тайм-аут (общий, без текста — он берётся из i18n.timeoutChoice).
-const TIMEOUT_DELTAS = { integrity: -8, money: 0, risk: +6 }
+const TIMEOUT_DELTAS = { integrity: -8, money: 0, risk: +6, reputation: -6 }
 
 export const useGameStore = create((set, get) => ({
   phase: 'intro', // 'intro' | 'scene' | 'feedback' | 'pre-ending' | 'ending'
-  sceneIndex: 0,
+  sceneIndex: 0,            // порядковый номер шага (для AnimatePresence ключей и UI-счётчика)
+  currentScenarioId: null,  // id текущей сцены (новая логика)
+  scenePath: [],            // [id1, id2, ...] пройденные сцены
   stats: { ...INITIAL_STATS },
-  history: [], // [{ scenarioId, choiceId, type, deltas, timedOut }]
+  history: [],              // [{ scenarioId, choiceId, type, deltas, timedOut }]
   lastEntry: null,
   ending: null,
   playerName: '',
   behaviorTags: { dominant: 'neutral', counts: {} },
+  sessionId: null,          // server session id (заполняется при /api/session)
 
   setPlayerName(name) {
     set({ playerName: name })
+  },
+
+  setSessionId(id) {
+    set({ sessionId: id })
   },
 
   start() {
     set({
       phase: 'scene',
       sceneIndex: 0,
+      currentScenarioId: START_SCENARIO_ID,
+      scenePath: [START_SCENARIO_ID],
       stats: { ...INITIAL_STATS },
       history: [],
       lastEntry: null,
@@ -67,11 +75,10 @@ export const useGameStore = create((set, get) => ({
   },
 
   choose(choice) {
-    const { stats, sceneIndex, history } = get()
-    const scenario = SCENARIOS[sceneIndex]
+    const { stats, currentScenarioId, history } = get()
     const nextStats = applyDeltas(stats, choice.deltas)
     const entry = {
-      scenarioId: scenario.id,
+      scenarioId: currentScenarioId,
       choiceId: choice.id,
       type: choice.type,
       deltas: choice.deltas,
@@ -86,11 +93,10 @@ export const useGameStore = create((set, get) => ({
   },
 
   timeout() {
-    const { stats, sceneIndex, history } = get()
-    const scenario = SCENARIOS[sceneIndex]
+    const { stats, currentScenarioId, history } = get()
     const nextStats = applyDeltas(stats, TIMEOUT_DELTAS)
     const entry = {
-      scenarioId: scenario.id,
+      scenarioId: currentScenarioId,
       choiceId: 'timeout',
       type: 'gray',
       deltas: TIMEOUT_DELTAS,
@@ -105,15 +111,21 @@ export const useGameStore = create((set, get) => ({
   },
 
   next() {
-    const { sceneIndex, stats, history } = get()
-    const nextIndex = sceneIndex + 1
-    if (nextIndex >= SCENARIOS.length) {
+    const { currentScenarioId, history, stats, sceneIndex, scenePath } = get()
+    const nextId = pickNextScenarioId(currentScenarioId, history, stats)
+    if (!nextId) {
       const ending = computeEnding(stats)
       const tags = computeTags(history)
       set({ phase: 'pre-ending', ending, behaviorTags: tags })
       return
     }
-    set({ phase: 'scene', sceneIndex: nextIndex, lastEntry: null })
+    set({
+      phase: 'scene',
+      sceneIndex: sceneIndex + 1,
+      currentScenarioId: nextId,
+      scenePath: [...scenePath, nextId],
+      lastEntry: null,
+    })
   },
 
   finishToEnding() {
@@ -134,10 +146,13 @@ export const useGameStore = create((set, get) => ({
     set({
       phase: 'intro',
       sceneIndex: 0,
+      currentScenarioId: null,
+      scenePath: [],
       stats: { ...INITIAL_STATS },
       history: [],
       lastEntry: null,
       ending: null,
+      sessionId: null,
       behaviorTags: { dominant: 'neutral', counts: {} },
     })
   },

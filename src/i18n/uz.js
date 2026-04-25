@@ -3,7 +3,7 @@
 export default {
   ui: {
     appName: 'Halol Avlod',
-    appTagline: 'Halol avlod — kelajak poydevori',
+    appTagline: 'Kelajak poydevori',
     hotline: 'Ishonch telefoni',
     hotlineNumber: '1144',
     hackathonTag: 'Xakaton-prototip · O\'zbekiston Respublikasi Antikorrupsiya agentligi',

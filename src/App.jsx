@@ -93,10 +93,10 @@ function Header({ phase, sceneIndex }) {
           <div className="relative h-2.5 w-2.5 shrink-0">
             <span className="absolute inset-0 rounded-full bg-accent animate-breath" />
           </div>
-          <span className="font-display text-lg font-semibold tracking-tightest truncate">
+          <span className="font-display text-lg font-semibold tracking-tightest shrink-0">
             {t('ui.appName')}
           </span>
-          <span className="hidden md:inline text-ink-500 text-xs uppercase tracking-[0.22em] divider-dot">
+          <span className="hidden md:inline text-ink-500 text-xs uppercase tracking-[0.22em] divider-dot truncate">
             {t('ui.appTagline')}
           </span>
         </div>

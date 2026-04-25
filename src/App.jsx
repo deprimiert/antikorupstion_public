@@ -8,6 +8,7 @@ import Intro from './components/Intro'
 import Scene from './components/Scene'
 import Feedback from './components/Feedback'
 import Ending from './components/Ending'
+import PreEnding from './components/PreEnding'
 import StatsBar from './components/StatsBar'
 import ProgressRail from './components/ProgressRail'
 import Toolbar from './components/Toolbar'
@@ -60,6 +61,17 @@ export default function App() {
                   transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
                   <Feedback />
+                </motion.div>
+              )}
+              {phase === 'pre-ending' && (
+                <motion.div
+                  key="pre-ending"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <PreEnding />
                 </motion.div>
               )}
               {phase === 'ending' && (

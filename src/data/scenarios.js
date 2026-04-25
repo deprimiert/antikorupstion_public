@@ -8,6 +8,7 @@ export const SCENARIOS = [
     id: 'university_exam',
     chainNext: 'internship',
     realStory: false,
+    timer: 50,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +12, money: -2, risk: 0 } },
       { id: 'b', type: 'shortcut', deltas: { integrity: -15, money: -8, risk: +10 } },
@@ -19,6 +20,7 @@ export const SCENARIOS = [
     chainPrev: 'university_exam',
     chainNext: 'birinchi_kun_1',
     realStory: false,
+    timer: 50,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +10, money: 0, risk: +5 } },
       { id: 'b', type: 'gray', deltas: { integrity: -8, money: +4, risk: 0 } },
@@ -30,6 +32,7 @@ export const SCENARIOS = [
     chainPrev: 'internship',
     chainNext: 'birinchi_kun_2',
     realStory: false,
+    timer: 45,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +14, money: 0, risk: 0 } },
       { id: 'b', type: 'gray', deltas: { integrity: -10, money: 0, risk: +10 } },
@@ -41,6 +44,7 @@ export const SCENARIOS = [
     chainPrev: 'birinchi_kun_1',
     chainNext: 'hr_envelope',
     realStory: false,
+    timer: 45,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +18, money: 0, risk: +5 } },
       { id: 'b', type: 'gray', deltas: { integrity: -12, money: 0, risk: +12 } },
@@ -54,6 +58,7 @@ export const SCENARIOS = [
     chainPrev: 'birinchi_kun_2',
     chainNext: 'road_stop',
     realStory: false,
+    timer: 40,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +15, money: -6, risk: 0 } },
       { id: 'b', type: 'shortcut', deltas: { integrity: -18, money: -15, risk: +15 } },
@@ -65,6 +70,7 @@ export const SCENARIOS = [
     chainPrev: 'hr_envelope',
     chainNext: 'hospital',
     realStory: true,
+    timer: 40,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +10, money: -12, risk: 0 } },
       { id: 'b', type: 'shortcut', deltas: { integrity: -10, money: -4, risk: +8 } },
@@ -76,6 +82,7 @@ export const SCENARIOS = [
     chainPrev: 'road_stop',
     chainNext: 'small_favor',
     realStory: true,
+    timer: 35,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +8, money: 0, risk: 0 } },
       { id: 'b', type: 'shortcut', deltas: { integrity: -12, money: -10, risk: +5 } },
@@ -87,6 +94,7 @@ export const SCENARIOS = [
     chainPrev: 'hospital',
     chainNext: 'coworker_theft',
     realStory: false,
+    timer: 35,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +10, money: -4, risk: +3 } },
       { id: 'b', type: 'gray', deltas: { integrity: -12, money: +6, risk: +8 } },
@@ -100,6 +108,7 @@ export const SCENARIOS = [
     chainPrev: 'small_favor',
     chainNext: 'fictitious_act',
     realStory: false,
+    timer: 30,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +10, money: 0, risk: +3 } },
       { id: 'b', type: 'gray', deltas: { integrity: -8, money: 0, risk: +6 } },
@@ -111,6 +120,7 @@ export const SCENARIOS = [
     chainPrev: 'coworker_theft',
     chainNext: 'school_tender',
     realStory: false,
+    timer: 30,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +22, money: -10, risk: +8 } },
       { id: 'b', type: 'shortcut', deltas: { integrity: -22, money: +8, risk: +25 } },
@@ -122,6 +132,7 @@ export const SCENARIOS = [
     chainPrev: 'fictitious_act',
     chainNext: 'journalist_leak',
     realStory: true,
+    timer: 30,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +20, money: 0, risk: +5 } },
       { id: 'b', type: 'shortcut', deltas: { integrity: -25, money: +35, risk: +25 } },
@@ -135,6 +146,7 @@ export const SCENARIOS = [
     chainPrev: 'school_tender',
     chainNext: 'elections',
     realStory: false,
+    timer: 25,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +15, money: 0, risk: +8 } },
       { id: 'b', type: 'risky-halol', deltas: { integrity: +8, money: 0, risk: +28 } },
@@ -146,6 +158,7 @@ export const SCENARIOS = [
     chainPrev: 'journalist_leak',
     chainNext: 'old_friend_minister',
     realStory: true,
+    timer: 25,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +25, money: -8, risk: +15 } },
       { id: 'b', type: 'shortcut', deltas: { integrity: -20, money: +15, risk: +30 } },
@@ -156,6 +169,7 @@ export const SCENARIOS = [
     id: 'old_friend_minister',
     chainPrev: 'elections',
     realStory: false,
+    timer: 25,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +30, money: 0, risk: +5 } },
       { id: 'b', type: 'shortcut', deltas: { integrity: -35, money: +20, risk: +40 } },

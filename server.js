@@ -25,5 +25,5 @@ const server = http.createServer((req, res) => {
 })
 
 server.listen(port, host, () => {
-  console.log(`Halol Yo'l running on http://${host}:${port}`)
+  console.log(`Halol Avlod running on http://${host}:${port}`)
 })

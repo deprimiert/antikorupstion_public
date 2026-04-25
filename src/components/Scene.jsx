@@ -6,7 +6,7 @@ import { findChainPrevChoice, SCENARIOS } from '../data/scenarios'
 import Timer from './Timer'
 import Choices from './Choices'
 
-const TIMER_SECONDS = 30
+const TIMER_SECONDS = 60
 
 export default function Scene({ scenario }) {
   const choose = useGameStore((s) => s.choose)

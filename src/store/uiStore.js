@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
-const THEME_KEY = 'halol_yol:theme'
-const LANG_KEY = 'halol_yol:lang'
+const THEME_KEY = 'halol_avlod:theme'
+const LANG_KEY = 'halol_avlod:lang'
 
 export const SUPPORTED_LANGS = ['uz', 'ru', 'en']
 

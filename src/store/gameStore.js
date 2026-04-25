@@ -81,7 +81,7 @@ export const useGameStore = create((set, get) => ({
       const ending = computeEnding(stats)
       set({ phase: 'ending', ending })
       try {
-        const key = 'halol_yol:badges'
+        const key = 'halol_avlod:badges'
         const raw = localStorage.getItem(key)
         const badges = raw ? JSON.parse(raw) : []
         if (!badges.includes(ending.id)) {
@@ -108,7 +108,7 @@ export const useGameStore = create((set, get) => ({
 
 export function getBadges() {
   try {
-    const raw = localStorage.getItem('halol_yol:badges')
+    const raw = localStorage.getItem('halol_avlod:badges')
     return raw ? JSON.parse(raw) : []
   } catch {
     return []

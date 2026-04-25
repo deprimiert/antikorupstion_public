@@ -1,10 +1,33 @@
-// Структура сцен — без текстов. Тексты живут в src/i18n/<lang>.js по ключу scenarios.<id>.*
-// Каждая сцена: id, optional realStory, optional chainNext/chainPrev, choices[].
-// Каждый choice: id ('a'|'b'|'c'), type, deltas. Текст label/subtitle/outcome — в i18n.
+// 14 сцен в 4 актах. Все сцены связаны цепочкой: chainPrev/chainNext.
+// narrator каждой следующей сцены меняется в зависимости от выбора в предыдущей.
+// Тексты — в src/i18n/<lang>.js по ключу scenarios.<id>.*
 
 export const SCENARIOS = [
+  // ─── Акт 1. Первое столкновение ───
+  {
+    id: 'university_exam',
+    chainNext: 'internship',
+    realStory: false,
+    choices: [
+      { id: 'a', type: 'halol', deltas: { integrity: +12, money: -2, risk: 0 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -15, money: -8, risk: +10 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +18, money: 0, risk: +15 } },
+    ],
+  },
+  {
+    id: 'internship',
+    chainPrev: 'university_exam',
+    chainNext: 'birinchi_kun_1',
+    realStory: false,
+    choices: [
+      { id: 'a', type: 'halol', deltas: { integrity: +10, money: 0, risk: +5 } },
+      { id: 'b', type: 'gray', deltas: { integrity: -8, money: +4, risk: 0 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +16, money: 0, risk: +18 } },
+    ],
+  },
   {
     id: 'birinchi_kun_1',
+    chainPrev: 'internship',
     chainNext: 'birinchi_kun_2',
     realStory: false,
     choices: [
@@ -16,6 +39,7 @@ export const SCENARIOS = [
   {
     id: 'birinchi_kun_2',
     chainPrev: 'birinchi_kun_1',
+    chainNext: 'hr_envelope',
     realStory: false,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +18, money: 0, risk: +5 } },
@@ -23,17 +47,12 @@ export const SCENARIOS = [
       { id: 'c', type: 'shortcut', deltas: { integrity: -22, money: 0, risk: +18 } },
     ],
   },
-  {
-    id: 'road_stop',
-    realStory: true,
-    choices: [
-      { id: 'a', type: 'halol', deltas: { integrity: +10, money: -12, risk: 0 } },
-      { id: 'b', type: 'shortcut', deltas: { integrity: -10, money: -4, risk: +8 } },
-      { id: 'c', type: 'risky-halol', deltas: { integrity: +20, money: -12, risk: +20 } },
-    ],
-  },
+
+  // ─── Акт 2. Личная жизнь против закона ───
   {
     id: 'hr_envelope',
+    chainPrev: 'birinchi_kun_2',
+    chainNext: 'road_stop',
     realStory: false,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +15, money: -6, risk: 0 } },
@@ -42,7 +61,20 @@ export const SCENARIOS = [
     ],
   },
   {
+    id: 'road_stop',
+    chainPrev: 'hr_envelope',
+    chainNext: 'hospital',
+    realStory: true,
+    choices: [
+      { id: 'a', type: 'halol', deltas: { integrity: +10, money: -12, risk: 0 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -10, money: -4, risk: +8 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +20, money: -12, risk: +20 } },
+    ],
+  },
+  {
     id: 'hospital',
+    chainPrev: 'road_stop',
+    chainNext: 'small_favor',
     realStory: true,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +8, money: 0, risk: 0 } },
@@ -51,7 +83,22 @@ export const SCENARIOS = [
     ],
   },
   {
+    id: 'small_favor',
+    chainPrev: 'hospital',
+    chainNext: 'coworker_theft',
+    realStory: false,
+    choices: [
+      { id: 'a', type: 'halol', deltas: { integrity: +10, money: -4, risk: +3 } },
+      { id: 'b', type: 'gray', deltas: { integrity: -12, money: +6, risk: +8 } },
+      { id: 'c', type: 'shortcut', deltas: { integrity: -18, money: +14, risk: +15 } },
+    ],
+  },
+
+  // ─── Акт 3. Соучастие ───
+  {
     id: 'coworker_theft',
+    chainPrev: 'small_favor',
+    chainNext: 'fictitious_act',
     realStory: false,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +10, money: 0, risk: +3 } },
@@ -60,16 +107,9 @@ export const SCENARIOS = [
     ],
   },
   {
-    id: 'school_tender',
-    realStory: true,
-    choices: [
-      { id: 'a', type: 'halol', deltas: { integrity: +20, money: 0, risk: +5 } },
-      { id: 'b', type: 'shortcut', deltas: { integrity: -25, money: +35, risk: +25 } },
-      { id: 'c', type: 'risky-halol', deltas: { integrity: +28, money: 0, risk: +30 } },
-    ],
-  },
-  {
     id: 'fictitious_act',
+    chainPrev: 'coworker_theft',
+    chainNext: 'school_tender',
     realStory: false,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +22, money: -10, risk: +8 } },
@@ -78,7 +118,22 @@ export const SCENARIOS = [
     ],
   },
   {
+    id: 'school_tender',
+    chainPrev: 'fictitious_act',
+    chainNext: 'journalist_leak',
+    realStory: true,
+    choices: [
+      { id: 'a', type: 'halol', deltas: { integrity: +20, money: 0, risk: +5 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -25, money: +35, risk: +25 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +28, money: 0, risk: +30 } },
+    ],
+  },
+
+  // ─── Акт 4. Борьба с системой ───
+  {
     id: 'journalist_leak',
+    chainPrev: 'school_tender',
+    chainNext: 'elections',
     realStory: false,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +15, money: 0, risk: +8 } },
@@ -88,6 +143,8 @@ export const SCENARIOS = [
   },
   {
     id: 'elections',
+    chainPrev: 'journalist_leak',
+    chainNext: 'old_friend_minister',
     realStory: true,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +25, money: -8, risk: +15 } },
@@ -97,6 +154,7 @@ export const SCENARIOS = [
   },
   {
     id: 'old_friend_minister',
+    chainPrev: 'elections',
     realStory: false,
     choices: [
       { id: 'a', type: 'halol', deltas: { integrity: +30, money: 0, risk: +5 } },

@@ -7,7 +7,8 @@
       "Bash(npm run *)",
       "Read(//c/c/Users/user/Downloads/medic ai/**)",
       "Read(//c/c/Users/user/Downloads/medic ai/anticorupsiya/**)",
-      "Read(//c/c/Users/user/Downloads/medic ai/anticorupsiya/src/**)"
+      "Read(//c/c/Users/user/Downloads/medic ai/anticorupsiya/src/**)",
+      "Bash(PORT=4173 timeout 6 npm run start)"
     ]
   }
 }

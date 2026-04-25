@@ -2,9 +2,13 @@ providers = ["node"]
 
 [variables]
 NODE_ENV = "production"
+NPM_CONFIG_PRODUCTION = "false"
+
+[phases.install]
+cmds = ["npm ci --include=dev"]
 
 [phases.build]
-cmds = ["npm ci", "npm run build"]
+cmds = ["npm run build"]
 
 [start]
 cmd = "npm run start"

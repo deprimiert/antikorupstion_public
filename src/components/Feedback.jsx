@@ -1,17 +1,19 @@
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
 import { useT } from '../i18n'
-import { SCENARIOS, CHOICE_TYPE_TONE } from '../data/scenarios'
+import { SCENARIOS, CHOICE_TYPE_TONE, pickNextScenarioId, actOf } from '../data/scenarios'
 
 export default function Feedback() {
   const lastEntry = useGameStore((s) => s.lastEntry)
-  const sceneIndex = useGameStore((s) => s.sceneIndex)
+  const currentScenarioId = useGameStore((s) => s.currentScenarioId)
+  const history = useGameStore((s) => s.history)
+  const stats = useGameStore((s) => s.stats)
   const next = useGameStore((s) => s.next)
   const t = useT()
-  const scenario = SCENARIOS[sceneIndex]
+  const scenario = SCENARIOS[currentScenarioId]
 
-  if (!lastEntry) return null
-  const isLast = sceneIndex >= SCENARIOS.length - 1
+  if (!lastEntry || !scenario) return null
+  const isLast = pickNextScenarioId(currentScenarioId, history, stats) === null
 
   const title = t(`scenarios.${scenario.id}.title`)
   const choiceLabel = lastEntry.timedOut
@@ -26,7 +28,7 @@ export default function Feedback() {
       <div className="col-span-12 lg:col-span-8">
         <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-[0.28em] text-ink-500">
           <span className="inline-block h-px w-6 bg-accent" />
-          {t('ui.feedback.kicker', { n: scenario ? sceneIndex + 1 : '' })}
+          {t('ui.feedback.kicker', { n: actOf(currentScenarioId) })}
         </div>
 
         <motion.div

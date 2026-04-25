@@ -1,4 +1,5 @@
-// Финалы — структура без текста. Тексты в i18n: endings.<id>.title/subtitle/body/stat/share
+// Финалы. Тексты в i18n: endings.<id>.title/subtitle/body/stat/share
+// Reputation — скрытый показатель, копится в фоне и показывается только в финале.
 
 export const ENDINGS = {
   halol_leader: {
@@ -24,11 +25,16 @@ export const ENDINGS = {
 }
 
 export function computeEnding(stats) {
-  const { integrity, money, risk } = stats
+  const { integrity, money, risk, reputation = 50 } = stats
 
+  // Жёсткие триггеры — рискованный путь и явная коррупция.
   if (risk >= 75) return ENDINGS.imprisoned
-  if (integrity >= 65) return ENDINGS.halol_leader
   if (money >= 55 && integrity <= 35) return ENDINGS.wealthy_under_investigation
   if (integrity <= 30 && risk >= 55) return ENDINGS.wealthy_under_investigation
+
+  // Reputation усиливает halol-исход и наказывает скрытое соучастие.
+  if (integrity >= 65 && reputation >= 55) return ENDINGS.halol_leader
+  if (reputation <= 25 && money >= 45) return ENDINGS.wealthy_under_investigation
+
   return ENDINGS.survived_but_broken
 }

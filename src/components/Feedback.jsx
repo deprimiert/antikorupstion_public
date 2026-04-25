@@ -1,22 +1,32 @@
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
-import { SCENARIOS, CHOICE_TYPE_LABELS, CHOICE_TYPE_COLORS } from '../data/scenarios'
+import { useT } from '../i18n'
+import { SCENARIOS, CHOICE_TYPE_TONE } from '../data/scenarios'
 
 export default function Feedback() {
-  const lastChoice = useGameStore((s) => s.lastChoice)
+  const lastEntry = useGameStore((s) => s.lastEntry)
   const sceneIndex = useGameStore((s) => s.sceneIndex)
   const next = useGameStore((s) => s.next)
+  const t = useT()
   const scenario = SCENARIOS[sceneIndex]
 
-  if (!lastChoice) return null
+  if (!lastEntry) return null
   const isLast = sceneIndex >= SCENARIOS.length - 1
+
+  const title = t(`scenarios.${scenario.id}.title`)
+  const choiceLabel = lastEntry.timedOut
+    ? t('ui.feedback.youStayedSilent')
+    : t(`scenarios.${scenario.id}.choices.${lastEntry.choiceId}.label`)
+  const outcome = lastEntry.timedOut
+    ? t('timeoutChoice.outcome')
+    : t(`scenarios.${scenario.id}.choices.${lastEntry.choiceId}.outcome`)
 
   return (
     <div className="grid grid-cols-12 gap-x-6 gap-y-8 pt-2 md:pt-6">
       <div className="col-span-12 lg:col-span-8">
         <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-[0.28em] text-ink-500">
           <span className="inline-block h-px w-6 bg-accent" />
-          Последствие · Сцена {scenario.id}
+          {t('ui.feedback.kicker', { n: scenario ? sceneIndex + 1 : '' })}
         </div>
 
         <motion.div
@@ -25,9 +35,9 @@ export default function Feedback() {
           transition={{ duration: 0.5 }}
           className="mt-5"
         >
-          <div className="text-sm text-ink-500">{scenario.title}</div>
+          <div className="text-sm text-ink-500">{title}</div>
           <h2 className="mt-2 font-display text-3xl md:text-5xl font-bold leading-[0.98] tracking-tightest">
-            {lastChoice.timedOut ? 'Ты промолчал.' : lastChoice.label}
+            {choiceLabel}
           </h2>
         </motion.div>
 
@@ -37,7 +47,7 @@ export default function Feedback() {
           transition={{ delay: 0.1, duration: 0.55 }}
           className="mt-7 max-w-[60ch] text-lg md:text-xl text-ink-300 leading-relaxed"
         >
-          {lastChoice.outcome}
+          {outcome}
         </motion.p>
 
         <motion.div
@@ -47,13 +57,15 @@ export default function Feedback() {
           className="mt-8 flex flex-wrap items-center gap-2"
         >
           <span
-            className={`text-[10px] font-mono uppercase tracking-[0.22em] ${CHOICE_TYPE_COLORS[lastChoice.type]}`}
+            className={`text-[10px] font-mono uppercase tracking-[0.22em] ${
+              CHOICE_TYPE_TONE[lastEntry.type] || 'text-ink-300'
+            }`}
           >
-            {CHOICE_TYPE_LABELS[lastChoice.type] || 'Решение'}
+            {t(`ui.choiceType.${lastEntry.type}`)}
           </span>
-          {lastChoice.timedOut && (
+          {lastEntry.timedOut && (
             <span className="rounded-full border border-ink-700 bg-ink-800/80 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-ink-300">
-              Тайм-аут
+              {t('ui.feedback.timeoutBadge')}
             </span>
           )}
         </motion.div>
@@ -67,24 +79,24 @@ export default function Feedback() {
           className="rounded-[2.5rem] border border-ink-800 bg-ink-900/70 p-6 md:p-8 shadow-card shadow-inset"
         >
           <div className="text-[11px] font-mono uppercase tracking-[0.28em] text-ink-500">
-            Изменения
+            {t('ui.feedback.changesKicker')}
           </div>
           <ul className="mt-5 space-y-4">
             <DeltaRow
-              label="Честность"
-              delta={lastChoice.deltas.integrity}
+              label={t('ui.stats.integrity')}
+              delta={lastEntry.deltas.integrity}
               tintPositive="text-halol"
               tintNegative="text-accent"
             />
             <DeltaRow
-              label="Ресурс"
-              delta={lastChoice.deltas.money}
+              label={t('ui.stats.money')}
+              delta={lastEntry.deltas.money}
               tintPositive="text-shadow"
               tintNegative="text-ink-500"
             />
             <DeltaRow
-              label="Риск"
-              delta={lastChoice.deltas.risk}
+              label={t('ui.stats.risk')}
+              delta={lastEntry.deltas.risk}
               tintPositive="text-accent"
               tintNegative="text-halol"
               invert
@@ -93,9 +105,9 @@ export default function Feedback() {
 
           <button
             onClick={next}
-            className="btn-tactile group mt-8 inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-ink-100 px-6 py-4 text-base font-semibold text-ink-950 hover:bg-white"
+            className="btn-tactile group mt-8 inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-invert-bg px-6 py-4 text-base font-semibold text-invert-fg hover:opacity-90"
           >
-            {isLast ? 'Узнать финал' : 'Следующая сцена'}
+            {isLast ? t('ui.feedback.reveal') : t('ui.feedback.next')}
             <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
           </button>
         </motion.div>
@@ -113,7 +125,6 @@ function DeltaRow({ label, delta, tintPositive, tintNegative, invert = false }) 
       </li>
     )
   }
-  // for risk: +risk is bad, we want to show in red
   const positive = invert ? delta < 0 : delta > 0
   const tone = positive ? tintPositive : tintNegative
   const sign = delta > 0 ? '+' : ''

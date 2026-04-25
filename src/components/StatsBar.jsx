@@ -1,22 +1,30 @@
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
+import { useT } from '../i18n'
 
 export default function StatsBar() {
   const stats = useGameStore((s) => s.stats)
+  const t = useT()
   return (
-    <div className="hidden sm:flex items-center gap-3 md:gap-4">
-      <StatPill label="Честность" value={stats.integrity} color="bg-halol" tone="text-halol" />
-      <StatPill label="Ресурс" value={stats.money} color="bg-shadow" tone="text-shadow" />
-      <StatPill label="Риск" value={stats.risk} color="bg-accent" tone="text-accent" />
+    <div className="hidden sm:flex items-center gap-2 md:gap-3">
+      <StatPill label={t('ui.stats.integrity')} value={stats.integrity} kind="halol" />
+      <StatPill label={t('ui.stats.money')} value={stats.money} kind="shadow" />
+      <StatPill label={t('ui.stats.risk')} value={stats.risk} kind="accent" />
     </div>
   )
 }
 
-function StatPill({ label, value, color, tone }) {
+const KIND_TO_TONE = {
+  halol: 'text-halol',
+  shadow: 'text-shadow',
+  accent: 'text-accent',
+}
+
+function StatPill({ label, value, kind }) {
   return (
     <div className="flex items-center gap-2.5 rounded-full border border-ink-800 bg-ink-900/70 px-3 py-1.5">
-      <div className="h-8 w-8">
-        <Ring value={value} color={color} />
+      <div className="h-7 w-7">
+        <Ring value={value} kind={kind} />
       </div>
       <div className="flex flex-col leading-tight">
         <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-ink-500">{label}</span>
@@ -25,7 +33,7 @@ function StatPill({ label, value, color, tone }) {
           initial={{ opacity: 0, y: -3 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className={`font-mono text-sm font-semibold tabular-nums ${tone}`}
+          className={`font-mono text-sm font-semibold tabular-nums ${KIND_TO_TONE[kind]}`}
         >
           {value}
         </motion.span>
@@ -34,20 +42,24 @@ function StatPill({ label, value, color, tone }) {
   )
 }
 
-function Ring({ value, color }) {
+const KIND_TO_VAR = {
+  halol: 'rgb(var(--halol))',
+  shadow: 'rgb(var(--shadow))',
+  accent: 'rgb(var(--accent))',
+}
+
+function Ring({ value, kind }) {
   const radius = 14
   const circ = 2 * Math.PI * radius
   const offset = circ - (value / 100) * circ
-  const stroke =
-    color === 'bg-halol' ? '#5cc08a' : color === 'bg-shadow' ? '#d4a24a' : '#e03a3a'
   return (
     <svg viewBox="0 0 32 32" className="h-full w-full -rotate-90">
-      <circle cx="16" cy="16" r={radius} stroke="#1f2024" strokeWidth="3" fill="none" />
+      <circle cx="16" cy="16" r={radius} stroke="rgb(var(--ink-700))" strokeWidth="3" fill="none" />
       <motion.circle
         cx="16"
         cy="16"
         r={radius}
-        stroke={stroke}
+        stroke={KIND_TO_VAR[kind]}
         strokeWidth="3"
         fill="none"
         strokeLinecap="round"

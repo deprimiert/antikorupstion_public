@@ -2,26 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Theme tokens via CSS variables.
+  Default = dark. Adding `.light` to <html> swaps tokens.
+  All Tailwind colors (ink-*, accent, halol, shadow) read from these vars.
+*/
+
+:root {
+  /* dark theme defaults */
+  --ink-950: 10 10 11;        /* page bg */
+  --ink-900: 17 17 19;        /* slightly elevated */
+  --ink-800: 23 23 26;        /* card bg / soft borders */
+  --ink-700: 31 32 36;        /* borders */
+  --ink-500: 107 109 117;     /* muted text */
+  --ink-300: 194 196 204;     /* soft text */
+  --ink-100: 236 236 239;     /* strong text */
+
+  --accent: 224 58 58;
+  --accent-soft: 179 46 46;
+  --accent-glow: 255 90 90;
+
+  --halol: 92 192 138;
+  --shadow: 212 162 74;
+
+  --invert-fg: 10 10 11;       /* on bright/colored bg */
+  --invert-bg: 236 236 239;    /* bright bg used for "inverse" buttons */
+
+  --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.55);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  --grain-opacity: 0.22;
+  --grain-blend: overlay;
+  --vignette-stop: rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
+}
+
+html.light {
+  --ink-950: 242 242 246;     /* page bg (slightly cooler than card) */
+  --ink-900: 255 255 255;     /* card bg */
+  --ink-800: 226 226 232;     /* subtle borders */
+  --ink-700: 205 205 212;     /* visible borders */
+  --ink-500: 102 102 112;     /* muted text */
+  --ink-300: 55 55 62;        /* soft text */
+  --ink-100: 14 14 17;        /* main / heading text */
+
+  --accent: 201 26 26;
+  --accent-soft: 139 16 16;
+  --accent-glow: 220 38 38;
+
+  --halol: 36 134 87;
+  --shadow: 161 113 39;
+
+  --invert-fg: 248 248 249;    /* light text used on dark "inverse" buttons */
+  --invert-bg: 17 17 19;       /* dark bg used for "inverse" buttons */
+
+  --shadow-card: 0 12px 32px -10px rgba(15, 15, 20, 0.10);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+
+  --grain-opacity: 0.07;
+  --grain-blend: multiply;
+  --vignette-stop: rgba(0, 0, 0, 0.06);
+
+  color-scheme: light;
+}
+
 @layer base {
-  :root {
-    color-scheme: dark;
-  }
   html,
   body,
   #root {
     min-height: 100dvh;
-    background: #0a0a0b;
+    background: rgb(var(--ink-950));
   }
   body {
     font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
-    color: theme('colors.ink.100');
+    color: rgb(var(--ink-100));
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overscroll-behavior-y: none;
+    transition: background-color 220ms ease, color 220ms ease;
   }
   ::selection {
-    background: theme('colors.accent.DEFAULT');
-    color: #0a0a0b;
+    background: rgb(var(--accent));
+    color: rgb(var(--invert-fg));
   }
 }
 
@@ -33,8 +96,8 @@
     pointer-events: none;
     z-index: 1;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.35'/></svg>");
-    opacity: 0.25;
-    mix-blend-mode: overlay;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
     animation: grain 8s steps(8) infinite;
   }
 
@@ -44,13 +107,15 @@
     inset: 0;
     pointer-events: none;
     z-index: 1;
-    background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.55) 100%);
+    background: radial-gradient(ellipse at center, transparent 50%, var(--vignette-stop) 100%);
   }
 
   .btn-tactile {
     transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
       border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
-      background-color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .btn-tactile:active {
     transform: translateY(1px) scale(0.985);
@@ -59,20 +124,24 @@
   .divider-dot::before {
     content: '·';
     margin: 0 0.5rem;
-    color: theme('colors.ink.500');
+    color: rgb(var(--ink-500));
   }
 
   .text-shimmer {
     background: linear-gradient(
       90deg,
-      theme('colors.ink.500') 0%,
-      theme('colors.ink.100') 50%,
-      theme('colors.ink.500') 100%
+      rgb(var(--ink-500)) 0%,
+      rgb(var(--ink-100)) 50%,
+      rgb(var(--ink-500)) 100%
     );
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     animation: shimmer 3s linear infinite;
+  }
+
+  .ring-segment {
+    transition: stroke-dashoffset 700ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 }

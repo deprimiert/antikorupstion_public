@@ -14,12 +14,16 @@ function applyDeltas(stats, deltas) {
   }
 }
 
+// Тайм-аут (общий, без текста — он берётся из i18n.timeoutChoice).
+const TIMEOUT_DELTAS = { integrity: -8, money: 0, risk: +6 }
+
 export const useGameStore = create((set, get) => ({
   phase: 'intro', // 'intro' | 'scene' | 'feedback' | 'ending'
   sceneIndex: 0,
   stats: { ...INITIAL_STATS },
-  history: [], // [{ scenarioId, choiceId, deltas, outcome, timedOut }]
-  lastChoice: null,
+  history: [], // [{ scenarioId, choiceId, type, deltas, timedOut }]
+  lastEntry: null,
+  ending: null,
 
   start() {
     set({
@@ -27,73 +31,54 @@ export const useGameStore = create((set, get) => ({
       sceneIndex: 0,
       stats: { ...INITIAL_STATS },
       history: [],
-      lastChoice: null,
+      lastEntry: null,
+      ending: null,
     })
   },
 
-  choose(choice, { timedOut = false } = {}) {
+  choose(choice) {
     const { stats, sceneIndex, history } = get()
     const scenario = SCENARIOS[sceneIndex]
     const nextStats = applyDeltas(stats, choice.deltas)
     const entry = {
       scenarioId: scenario.id,
-      stage: scenario.stage,
-      title: scenario.title,
       choiceId: choice.id,
-      choiceLabel: choice.label,
-      choiceType: choice.type,
+      type: choice.type,
       deltas: choice.deltas,
-      outcome: choice.outcome,
-      timedOut,
+      timedOut: false,
     }
     set({
       phase: 'feedback',
       stats: nextStats,
       history: [...history, entry],
-      lastChoice: { ...choice, timedOut },
+      lastEntry: entry,
     })
   },
 
-  timeoutChoice() {
+  timeout() {
     const { stats, sceneIndex, history } = get()
     const scenario = SCENARIOS[sceneIndex]
-    // Тайм-аут = «не решил» — бьёт по integrity, добавляет немного risk.
-    const timeoutChoice = {
-      id: 'timeout',
-      label: 'Ты не решил',
-      subtitle: 'Время вышло.',
+    const nextStats = applyDeltas(stats, TIMEOUT_DELTAS)
+    const entry = {
+      scenarioId: scenario.id,
+      choiceId: 'timeout',
       type: 'gray',
-      deltas: { integrity: -8, money: 0, risk: +6 },
-      outcome:
-        'Ты промолчал. За тебя решили другие. Иногда это и есть выбор.',
+      deltas: TIMEOUT_DELTAS,
+      timedOut: true,
     }
-    const nextStats = applyDeltas(stats, timeoutChoice.deltas)
     set({
       phase: 'feedback',
       stats: nextStats,
-      history: [
-        ...history,
-        {
-          scenarioId: scenario.id,
-          stage: scenario.stage,
-          title: scenario.title,
-          choiceId: 'timeout',
-          choiceLabel: timeoutChoice.label,
-          choiceType: 'gray',
-          deltas: timeoutChoice.deltas,
-          outcome: timeoutChoice.outcome,
-          timedOut: true,
-        },
-      ],
-      lastChoice: { ...timeoutChoice, timedOut: true },
+      history: [...history, entry],
+      lastEntry: entry,
     })
   },
 
   next() {
-    const { sceneIndex, stats, history } = get()
+    const { sceneIndex, stats } = get()
     const nextIndex = sceneIndex + 1
     if (nextIndex >= SCENARIOS.length) {
-      const ending = computeEnding(stats, history)
+      const ending = computeEnding(stats)
       set({ phase: 'ending', ending })
       try {
         const key = 'halol_yol:badges'
@@ -106,7 +91,7 @@ export const useGameStore = create((set, get) => ({
       } catch {}
       return
     }
-    set({ phase: 'scene', sceneIndex: nextIndex, lastChoice: null })
+    set({ phase: 'scene', sceneIndex: nextIndex, lastEntry: null })
   },
 
   restart() {
@@ -115,12 +100,10 @@ export const useGameStore = create((set, get) => ({
       sceneIndex: 0,
       stats: { ...INITIAL_STATS },
       history: [],
-      lastChoice: null,
+      lastEntry: null,
       ending: null,
     })
   },
-
-  ending: null,
 }))
 
 export function getBadges() {

@@ -1,430 +1,123 @@
-// 10 сцен моральных дилемм.
-// Каждый выбор меняет: integrity (честность), money (ресурс), risk (шанс посадки).
-// Диапазоны: integrity 0..100, money 0..100, risk 0..100.
+// Структура сцен — без текстов. Тексты живут в src/i18n/<lang>.js по ключу scenarios.<id>.*
+// Каждая сцена: id, optional realStory, optional chainNext/chainPrev, choices[].
+// Каждый choice: id ('a'|'b'|'c'), type, deltas. Текст label/subtitle/outcome — в i18n.
 
 export const SCENARIOS = [
   {
-    id: 1,
-    stage: 'СТУДЕНТ',
-    setting: 'Университет, коридор перед экзаменом',
-    title: 'Первый конверт',
-    narrator:
-      'Третий курс. До экзамена по праву десять минут. Ты не спал два дня, но всё равно не уверен в билетах. Старший курс подходит.',
-    quote:
-      '— Слушай, не парься. С преподавателем есть «договорённость». Двести тысяч — и тебя даже спрашивать не будут. Все наши уже скинулись.',
+    id: 'birinchi_kun_1',
+    chainNext: 'birinchi_kun_2',
     realStory: false,
     choices: [
-      {
-        id: 'a',
-        label: 'Пойти и сдать самому',
-        subtitle: 'Что знаю — то знаю.',
-        type: 'halol',
-        deltas: { integrity: +12, money: -2, risk: 0 },
-        outcome:
-          'Ты идёшь в аудиторию. Руки трясутся. Преподаватель хмурится — но ставит «удовлетворительно». Ты прошёл. Сам.',
-      },
-      {
-        id: 'b',
-        label: 'Скинуться со всеми',
-        subtitle: '«Все так делают».',
-        type: 'shortcut',
-        deltas: { integrity: -15, money: -8, risk: +10 },
-        outcome:
-          'Экзамен ты не открыл. Оценка «отлично» в зачётке. Но твой одногруппник, который отказался, смотрит мимо тебя в коридоре.',
-      },
-      {
-        id: 'c',
-        label: 'Записать разговор на диктофон',
-        subtitle: 'Это уже не шутка.',
-        type: 'risky-halol',
-        deltas: { integrity: +18, money: 0, risk: +15 },
-        outcome:
-          'Ты сохранил файл. Пока никому не отправил. Но что-то внутри изменилось — ты уже не просто студент.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +14, money: 0, risk: 0 } },
+      { id: 'b', type: 'gray', deltas: { integrity: -10, money: 0, risk: +10 } },
+      { id: 'c', type: 'shortcut', deltas: { integrity: -18, money: +12, risk: +20 } },
     ],
   },
-
   {
-    id: 2,
-    stage: 'ВЫПУСКНИК',
-    setting: 'Трасса А-373, 23:40',
-    title: 'Остановка на обочине',
-    narrator:
-      'Ты едешь домой после выпускного. Чуть превысил. Красно-синие мигалки. Инспектор подходит к окну.',
-    quote:
-      '— Превышение на 22 км/ч. Лишение прав или штраф 2.5 миллиона. Или… можешь «договориться». Пятьсот — и поехал дальше.',
+    id: 'birinchi_kun_2',
+    chainPrev: 'birinchi_kun_1',
+    realStory: false,
+    choices: [
+      { id: 'a', type: 'halol', deltas: { integrity: +18, money: 0, risk: +5 } },
+      { id: 'b', type: 'gray', deltas: { integrity: -12, money: 0, risk: +12 } },
+      { id: 'c', type: 'shortcut', deltas: { integrity: -22, money: 0, risk: +18 } },
+    ],
+  },
+  {
+    id: 'road_stop',
     realStory: true,
-    realStoryNote: 'Сценарий основан на типовых делах Антикоррупционного агентства.',
     choices: [
-      {
-        id: 'a',
-        label: 'Оплатить штраф официально',
-        subtitle: 'Протокол, квитанция, всё по закону.',
-        type: 'halol',
-        deltas: { integrity: +10, money: -12, risk: 0 },
-        outcome:
-          'Ты уезжаешь через сорок минут. Штраф придёт по SMS через неделю. Ты спал спокойно.',
-      },
-      {
-        id: 'b',
-        label: 'Отдать пятьсот тысяч',
-        subtitle: 'Быстро, тихо, домой.',
-        type: 'shortcut',
-        deltas: { integrity: -10, money: -4, risk: +8 },
-        outcome:
-          'Инспектор прячет купюру в карман. Ты едешь дальше. На следующем посту тебя запомнят.',
-      },
-      {
-        id: 'c',
-        label: 'Снять на телефон и подать рапорт',
-        subtitle: 'Включаешь камеру в кармане.',
-        type: 'risky-halol',
-        deltas: { integrity: +20, money: -12, risk: +20 },
-        outcome:
-          'Ты доехал. На следующей неделе звонок из прокуратуры. Не все в отделе любят тебя. Но один инспектор — уволен.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +10, money: -12, risk: 0 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -10, money: -4, risk: +8 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +20, money: -12, risk: +20 } },
     ],
   },
-
   {
-    id: 3,
-    stage: 'СОИСКАТЕЛЬ',
-    setting: 'Отдел кадров, государственное учреждение',
-    title: 'Место в бюджете',
-    narrator:
-      'Ты полгода искал работу. Наконец — приглашение. Начальник отдела кадров закрывает дверь, улыбается.',
-    quote:
-      '— Хорошее резюме. Но желающих много. Три тысячи долларов — и твоё резюме окажется сверху стопки. Обычная практика.',
+    id: 'hr_envelope',
     realStory: false,
     choices: [
-      {
-        id: 'a',
-        label: 'Отказаться и уйти',
-        subtitle: 'Продолжу искать.',
-        type: 'halol',
-        deltas: { integrity: +15, money: -6, risk: 0 },
-        outcome:
-          'Через месяц тебя взяли в другое место — за меньшие деньги, но без конверта. Ты начинаешь с чистого счёта.',
-      },
-      {
-        id: 'b',
-        label: 'Заплатить и получить место',
-        subtitle: 'Это инвестиция.',
-        type: 'shortcut',
-        deltas: { integrity: -18, money: -15, risk: +15 },
-        outcome:
-          'Ты на работе. Но ты теперь «должен». И это не последний конверт, который ты отнесёшь.',
-      },
-      {
-        id: 'c',
-        label: 'Сообщить на горячую линию',
-        subtitle: '1144. Анонимно.',
-        type: 'risky-halol',
-        deltas: { integrity: +22, money: -6, risk: +22 },
-        outcome:
-          'Проверка пришла через две недели. Тебя на эту работу не взяли. Но отдел кадров расформирован.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +15, money: -6, risk: 0 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -18, money: -15, risk: +15 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +22, money: -6, risk: +22 } },
     ],
   },
-
   {
-    id: 4,
-    stage: 'МОЛОДОЙ СПЕЦ',
-    setting: 'Районная больница, хирургическое отделение',
-    title: 'Операция завтра',
-    narrator:
-      'Твою бабушку готовят к операции. Хирург отводит тебя в сторону, говорит вполголоса, глядя в пол.',
-    quote:
-      '— Технически операция бесплатная. Но… есть благодарность. Два миллиона — и я лично буду оперировать. Иначе — очередь, два месяца.',
+    id: 'hospital',
     realStory: true,
-    realStoryNote: 'Каждый третий гражданин сталкивался с «благодарностью» в медицине (опрос 2023).',
     choices: [
-      {
-        id: 'a',
-        label: 'Отказаться и ждать очередь',
-        subtitle: 'Закон на моей стороне.',
-        type: 'halol',
-        deltas: { integrity: +8, money: 0, risk: 0 },
-        outcome:
-          'Очередь оказалась не два месяца, а три недели. Бабушку прооперировал другой хирург. Всё прошло хорошо.',
-      },
-      {
-        id: 'b',
-        label: 'Дать деньги — это же родной человек',
-        subtitle: 'Не время спорить.',
-        type: 'shortcut',
-        deltas: { integrity: -12, money: -10, risk: +5 },
-        outcome:
-          'Операция прошла завтра. Бабушка жива. Но эту систему ты только что оплатил своей подписью.',
-      },
-      {
-        id: 'c',
-        label: 'Зафиксировать разговор и подать жалобу',
-        subtitle: 'После операции. Анонимно.',
-        type: 'risky-halol',
-        deltas: { integrity: +20, money: 0, risk: +12 },
-        outcome:
-          'Жалоба дошла до Минздрава. Хирурга понизили. В отделении теперь висит номер горячей линии.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +8, money: 0, risk: 0 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -12, money: -10, risk: +5 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +20, money: 0, risk: +12 } },
     ],
   },
-
   {
-    id: 5,
-    stage: 'КОЛЛЕГА',
-    setting: 'Open space, пятница, 17:30',
-    title: 'Тихое воровство',
-    narrator:
-      'Твой коллега Бахтиёр уже третий месяц выписывает «командировки», которых нет. Возвращает пустые чеки. Ты случайно видел документы.',
-    quote: 'Бахтиёр: — Брат, тебе что, много надо? У всех своя схема. Ты же не крыса.',
+    id: 'coworker_theft',
     realStory: false,
     choices: [
-      {
-        id: 'a',
-        label: 'Поговорить с ним лично',
-        subtitle: 'По-человечески.',
-        type: 'halol',
-        deltas: { integrity: +10, money: 0, risk: +3 },
-        outcome:
-          'Он психанул. Но через месяц командировки прекратились. Он уволился сам. Вы больше не общаетесь.',
-      },
-      {
-        id: 'b',
-        label: 'Молчать — не моё дело',
-        subtitle: 'Голова болеть не должна.',
-        type: 'gray',
-        deltas: { integrity: -8, money: 0, risk: +6 },
-        outcome:
-          'Схема шла ещё полгода. Когда всплыло — HR допросил всех. Включая тебя. Ты «не заметил».',
-      },
-      {
-        id: 'c',
-        label: 'Написать в службу внутреннего контроля',
-        subtitle: 'Без имён, с фактами.',
-        type: 'risky-halol',
-        deltas: { integrity: +15, money: 0, risk: +10 },
-        outcome:
-          'Проверка. Увольнение. Его семья теперь винит тебя — он догадался, кто написал. Ты прав, но спишь плохо.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +10, money: 0, risk: +3 } },
+      { id: 'b', type: 'gray', deltas: { integrity: -8, money: 0, risk: +6 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +15, money: 0, risk: +10 } },
     ],
   },
-
   {
-    id: 6,
-    stage: 'СПЕЦИАЛИСТ',
-    setting: 'Госзакупка: школа в районе',
-    title: 'Разница — пополам',
-    narrator:
-      'Ты ведёшь тендер на строительство школы. Побеждает подрядчик с подозрительно низкой ценой. Через неделю — встреча в ресторане.',
-    quote:
-      '— Цемент возьмём дешевле. Арматуру — тоньше. Разница — шестьсот миллионов. Тридцать процентов — твои. Школа простоит лет пятнадцать, этого хватит.',
+    id: 'school_tender',
     realStory: true,
-    realStoryNote: 'Аналогично делу о школе в Сурхандарье (2021).',
     choices: [
-      {
-        id: 'a',
-        label: 'Отказаться и требовать по спецификации',
-        subtitle: 'Школа должна стоять 50 лет.',
-        type: 'halol',
-        deltas: { integrity: +20, money: 0, risk: +5 },
-        outcome:
-          'Подрядчик срывает сроки. Тебя пытаются заменить. Ты удерживаешь позицию. Школа открылась через год — и держит стандарт.',
-      },
-      {
-        id: 'b',
-        label: 'Принять «свою долю»',
-        subtitle: 'Детям школу всё равно построят.',
-        type: 'shortcut',
-        deltas: { integrity: -25, money: +35, risk: +25 },
-        outcome:
-          'Деньги пришли в конверте. Ты купил машину. Школа открылась. Через четыре года рухнула крыша — к счастью, ночью.',
-      },
-      {
-        id: 'c',
-        label: 'Зафиксировать и передать в Антикор',
-        subtitle: 'Со всеми сообщениями.',
-        type: 'risky-halol',
-        deltas: { integrity: +28, money: 0, risk: +30 },
-        outcome:
-          'Подрядчик задержан. Против тебя — попытка «дискредитации». Но агентство тебя защитило. Школа построена честно.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +20, money: 0, risk: +5 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -25, money: +35, risk: +25 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +28, money: 0, risk: +30 } },
     ],
   },
-
   {
-    id: 7,
-    stage: 'РУКОВОДИТЕЛЬ ОТДЕЛА',
-    setting: 'Кабинет начальника, пятница вечер',
-    title: 'Просто подпиши',
-    narrator:
-      'Начальник кладёт перед тобой акт выполненных работ. Работ не было — ты знаешь подрядчика, он твой сосед. Рядом ручка.',
-    quote: '— Слушай, всё согласовано наверху. Просто подпись. Никаких вопросов не будет. Никогда.',
+    id: 'fictitious_act',
     realStory: false,
     choices: [
-      {
-        id: 'a',
-        label: 'Отказаться подписывать',
-        subtitle: 'Даже если уволят.',
-        type: 'halol',
-        deltas: { integrity: +22, money: -10, risk: +8 },
-        outcome:
-          'Тебя перевели на менее «удобную» должность. Акт всё равно кто-то подписал. Через год началось уголовное дело — без твоей фамилии.',
-      },
-      {
-        id: 'b',
-        label: 'Подписать и молчать',
-        subtitle: 'Я не принимаю решение.',
-        type: 'shortcut',
-        deltas: { integrity: -22, money: +8, risk: +25 },
-        outcome:
-          'Бумага ушла. Через полтора года следователь зачитывает твою подпись в протоколе. «Никаких вопросов» превратились в десятки вопросов.',
-      },
-      {
-        id: 'c',
-        label: 'Подписать, но снять копию и сохранить',
-        subtitle: 'На всякий случай.',
-        type: 'gray',
-        deltas: { integrity: -10, money: +4, risk: +15 },
-        outcome:
-          'Ты внутри системы. Копия лежит в сейфе. Спишь хуже — но пока цел. Пока.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +22, money: -10, risk: +8 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -22, money: +8, risk: +25 } },
+      { id: 'c', type: 'gray', deltas: { integrity: -10, money: +4, risk: +15 } },
     ],
   },
-
   {
-    id: 8,
-    stage: 'ДИРЕКТОР',
-    setting: 'Кафе на Юнусабаде, 22:10',
-    title: 'Журналист и флешка',
-    narrator:
-      'Журналист, которому ты доверяешь, просит слить внутреннюю переписку — доказательства махинаций твоего зама. У тебя есть доступ.',
-    quote:
-      '— Если не я это опубликую, это похоронят. Через месяц он уйдёт выше. И будет решать уже судьбы, не контракты.',
+    id: 'journalist_leak',
     realStory: false,
     choices: [
-      {
-        id: 'a',
-        label: 'Передать через внутренний комплаенс',
-        subtitle: 'Есть официальный канал.',
-        type: 'halol',
-        deltas: { integrity: +15, money: 0, risk: +8 },
-        outcome:
-          'Проверка заняла четыре месяца. Зам отстранён. Журналист расстроен — но ты защищён документом.',
-      },
-      {
-        id: 'b',
-        label: 'Слить журналисту',
-        subtitle: 'Быстрее и громче.',
-        type: 'risky-halol',
-        deltas: { integrity: +8, money: 0, risk: +28 },
-        outcome:
-          'Через два дня — скандал в СМИ. Через неделю — утечку отследили до тебя. Ты прав, но стоишь под статьёй о разглашении.',
-      },
-      {
-        id: 'c',
-        label: 'Отказать и не вмешиваться',
-        subtitle: 'Это не моё дело.',
-        type: 'gray',
-        deltas: { integrity: -12, money: +4, risk: -4 },
-        outcome:
-          'Зам ушёл выше. Ты продолжил работать. Через год он подписал решение, которое напрямую коснулось тебя.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +15, money: 0, risk: +8 } },
+      { id: 'b', type: 'risky-halol', deltas: { integrity: +8, money: 0, risk: +28 } },
+      { id: 'c', type: 'gray', deltas: { integrity: -12, money: +4, risk: -4 } },
     ],
   },
-
   {
-    id: 9,
-    stage: 'ЗАМЕСТИТЕЛЬ ХОКИМА',
-    setting: 'Махалля, день выборов',
-    title: '«Организованное» голосование',
-    narrator:
-      'Тебя просят «обеспечить явку и результат» в твоей махалле. Конверт с деньгами для агитаторов и список «правильных» бюллетеней.',
-    quote: '— Это просто работа. Все районы так работают. Ты новый, просто делай как все.',
+    id: 'elections',
     realStory: true,
-    realStoryNote: 'Похожие схемы фиксировались ОБСЕ на выборах в регионе.',
     choices: [
-      {
-        id: 'a',
-        label: 'Отказаться и провести выборы честно',
-        subtitle: 'Явка какая будет — такая будет.',
-        type: 'halol',
-        deltas: { integrity: +25, money: -8, risk: +15 },
-        outcome:
-          'Явка 48%. Твой результат не понравился никому наверху. Тебя не повысили. Но ты — единственный в области, к кому нет претензий по нарушениям.',
-      },
-      {
-        id: 'b',
-        label: 'Принять схему',
-        subtitle: 'Первый раз — и последний.',
-        type: 'shortcut',
-        deltas: { integrity: -20, money: +15, risk: +30 },
-        outcome:
-          'Явка 94%. Тебя похвалили. Через полгода в том же районе — протест. Камеры сняли то, чего быть не должно.',
-      },
-      {
-        id: 'c',
-        label: 'Провести, но задокументировать давление',
-        subtitle: 'Каждый звонок — на запись.',
-        type: 'risky-halol',
-        deltas: { integrity: +18, money: -4, risk: +25 },
-        outcome:
-          'Папка лежит в банковской ячейке. Ты играешь двойную игру. Это защита — и это риск. Но руки чище, чем у соседа.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +25, money: -8, risk: +15 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -20, money: +15, risk: +30 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +18, money: -4, risk: +25 } },
     ],
   },
-
   {
-    id: 10,
-    stage: 'МИНИСТР',
-    setting: 'Кабинет министра, поздний вечер',
-    title: 'Старый друг у двери',
-    narrator:
-      'Твой друг детства пришёл без записи. Его компания под проверкой. Документы — у тебя на столе. Одно слово — и проверка «замыкается».',
-    quote:
-      '— Брат. Мы вместе росли. Ты знаешь мой дом. Одна подпись — и я спасён. Я это не забуду. Никогда.',
+    id: 'old_friend_minister',
     realStory: false,
     choices: [
-      {
-        id: 'a',
-        label: 'Отказать и отправить дело дальше',
-        subtitle: 'Дружба не выше закона.',
-        type: 'halol',
-        deltas: { integrity: +30, money: 0, risk: +5 },
-        outcome:
-          'Друг вышел молча. Больше не звонит. Его компания проиграла суд. А ты — остаёшься министром, к которому не ходят с такими просьбами.',
-      },
-      {
-        id: 'b',
-        label: 'Помочь другу',
-        subtitle: 'Один раз — не система.',
-        type: 'shortcut',
-        deltas: { integrity: -35, money: +20, risk: +40 },
-        outcome:
-          'Проверка закрылась. Через восемь месяцев журналист опубликовал цепочку. Твоё имя — первое в заголовке.',
-      },
-      {
-        id: 'c',
-        label: 'Передать дело в независимую комиссию',
-        subtitle: 'Чтобы не ты решал.',
-        type: 'risky-halol',
-        deltas: { integrity: +22, money: 0, risk: +10 },
-        outcome:
-          'Комиссия нашла частичную вину. Штраф, без тюрьмы. Друг понял. Через год он первый позвонил — поблагодарить.',
-      },
+      { id: 'a', type: 'halol', deltas: { integrity: +30, money: 0, risk: +5 } },
+      { id: 'b', type: 'shortcut', deltas: { integrity: -35, money: +20, risk: +40 } },
+      { id: 'c', type: 'risky-halol', deltas: { integrity: +22, money: 0, risk: +10 } },
     ],
   },
 ]
 
-export const CHOICE_TYPE_LABELS = {
-  halol: 'Халол',
-  gray: 'Серый',
-  shortcut: 'Короткий путь',
-  'risky-halol': 'Рискованный халол',
-}
-
-export const CHOICE_TYPE_COLORS = {
+export const CHOICE_TYPE_TONE = {
   halol: 'text-halol',
   gray: 'text-ink-300',
   shortcut: 'text-accent',
   'risky-halol': 'text-shadow',
+}
+
+// Helper: previous choice id from history for chained scenes.
+export function findChainPrevChoice(history, chainPrevId) {
+  if (!chainPrevId) return null
+  for (let i = history.length - 1; i >= 0; i--) {
+    if (history[i].scenarioId === chainPrevId) return history[i]
+  }
+  return null
 }

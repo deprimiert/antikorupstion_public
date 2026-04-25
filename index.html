@@ -1,12 +1,13 @@
 <!doctype html>
-<html lang="ru">
+<html lang="uz">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0a0a0b" />
-    <meta name="description" content="Halol Yo‘l — интерактивная игра о выборе между честностью и коррупцией. 10 сцен, 4 финала." />
-    <meta property="og:title" content="Halol Yo‘l — Путь честности" />
-    <meta property="og:description" content="Что бы ты выбрал? 10 сцен, 10 секунд на решение." />
+    <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f8f8f9" media="(prefers-color-scheme: light)" />
+    <meta name="description" content="Halol Yo‘l — interaktiv anti-korrupsiya o‘yini. 11 sahna, 4 yakun." />
+    <meta property="og:title" content="Halol Yo‘l" />
+    <meta property="og:description" content="Sen nimani tanlaysan? 11 sahna, 10 soniya, 4 yakun." />
     <meta property="og:type" content="website" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,7 +15,26 @@
       href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <title>Halol Yo‘l — Путь честности</title>
+    <title>Halol Yo‘l</title>
+    <script>
+      // Pre-paint theme + lang detection so first frame matches user setting (no flash).
+      try {
+        var t = localStorage.getItem('halol_yol:theme')
+        if (!t) {
+          t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+        }
+        if (t === 'light') document.documentElement.classList.add('light')
+
+        var l = localStorage.getItem('halol_yol:lang')
+        if (!l) {
+          var nav = (navigator.language || 'uz').toLowerCase()
+          if (nav.startsWith('ru')) l = 'ru'
+          else if (nav.startsWith('en')) l = 'en'
+          else l = 'uz'
+        }
+        document.documentElement.setAttribute('lang', l)
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

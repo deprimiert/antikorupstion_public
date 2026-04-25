@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
+import { useT } from '../i18n'
+import { findChainPrevChoice, SCENARIOS } from '../data/scenarios'
 import Timer from './Timer'
 import Choices from './Choices'
 
@@ -8,7 +10,10 @@ const TIMER_SECONDS = 10
 
 export default function Scene({ scenario }) {
   const choose = useGameStore((s) => s.choose)
-  const timeoutChoice = useGameStore((s) => s.timeoutChoice)
+  const timeoutFn = useGameStore((s) => s.timeout)
+  const sceneIndex = useGameStore((s) => s.sceneIndex)
+  const history = useGameStore((s) => s.history)
+  const t = useT()
   const [locked, setLocked] = useState(false)
   const lockedRef = useRef(false)
 
@@ -21,7 +26,7 @@ export default function Scene({ scenario }) {
     if (lockedRef.current) return
     lockedRef.current = true
     setLocked(true)
-    timeoutChoice()
+    timeoutFn()
   }
 
   function handleChoose(choice) {
@@ -31,15 +36,36 @@ export default function Scene({ scenario }) {
     choose(choice)
   }
 
+  // Chain support: if scenario.chainPrev, swap narrator based on previous choice id.
+  let narrator = t(`scenarios.${scenario.id}.narrator`)
+  if (scenario.chainPrev) {
+    const prev = findChainPrevChoice(history, scenario.chainPrev)
+    if (prev) {
+      const swapped = t(`scenarios.${scenario.id}.narratorByPrev.${prev.choiceId}`)
+      // useT returns the key string when not found — guard against that.
+      const expectedFallback = `scenarios.${scenario.id}.narratorByPrev.${prev.choiceId}`
+      if (swapped && swapped !== expectedFallback) {
+        narrator = swapped
+      }
+    }
+  }
+
+  const stage = t(`scenarios.${scenario.id}.stage`)
+  const setting = t(`scenarios.${scenario.id}.setting`)
+  const title = t(`scenarios.${scenario.id}.title`)
+  const quote = t(`scenarios.${scenario.id}.quote`)
+  const realStoryNote = t(`scenarios.${scenario.id}.realStoryNote`)
+  const sceneCounter = t('ui.scene.sceneOf', { n: sceneIndex + 1, total: SCENARIOS.length })
+
   return (
     <div className="grid grid-cols-12 gap-x-6 gap-y-8">
       {/* Левый блок — контекст сцены */}
       <div className="col-span-12 lg:col-span-7">
-        <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-[0.28em] text-ink-500">
+        <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono uppercase tracking-[0.28em] text-ink-500">
           <span className="inline-block h-px w-6 bg-accent" />
-          <span>Сцена {scenario.id} из 10</span>
+          <span>{sceneCounter}</span>
           <span className="text-ink-700">/</span>
-          <span className="text-ink-300">{scenario.stage}</span>
+          <span className="text-ink-300">{stage}</span>
         </div>
 
         <motion.h2
@@ -48,10 +74,10 @@ export default function Scene({ scenario }) {
           transition={{ delay: 0.05, duration: 0.5 }}
           className="mt-5 font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[0.95] tracking-tightest"
         >
-          {scenario.title}
+          {title}
         </motion.h2>
 
-        <div className="mt-3 text-sm text-ink-500">{scenario.setting}</div>
+        <div className="mt-3 text-sm text-ink-500">{setting}</div>
 
         <motion.p
           initial={{ opacity: 0, y: 8 }}
@@ -59,7 +85,7 @@ export default function Scene({ scenario }) {
           transition={{ delay: 0.1, duration: 0.5 }}
           className="mt-7 max-w-[58ch] text-lg md:text-xl text-ink-300 leading-relaxed"
         >
-          {scenario.narrator}
+          {narrator}
         </motion.p>
 
         <motion.blockquote
@@ -68,7 +94,7 @@ export default function Scene({ scenario }) {
           transition={{ delay: 0.2, duration: 0.55 }}
           className="mt-6 max-w-[58ch] border-l-2 border-accent pl-5 text-base md:text-lg text-ink-100 italic leading-relaxed"
         >
-          {scenario.quote}
+          {quote}
         </motion.blockquote>
 
         {scenario.realStory && (
@@ -79,9 +105,9 @@ export default function Scene({ scenario }) {
             className="mt-6 inline-flex items-center gap-2 rounded-full border border-shadow/40 bg-shadow/10 px-3 py-1.5 text-xs text-shadow"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-shadow animate-breath" />
-            Основано на реальных делах
-            {scenario.realStoryNote && (
-              <span className="hidden sm:inline text-shadow/80">— {scenario.realStoryNote}</span>
+            {t('ui.scene.basedOnReal')}
+            {realStoryNote && realStoryNote !== `scenarios.${scenario.id}.realStoryNote` && (
+              <span className="hidden sm:inline text-shadow/80">— {realStoryNote}</span>
             )}
           </motion.div>
         )}
@@ -96,7 +122,12 @@ export default function Scene({ scenario }) {
             keyId={scenario.id}
             locked={locked}
           />
-          <Choices choices={scenario.choices} onChoose={handleChoose} locked={locked} />
+          <Choices
+            scenarioId={scenario.id}
+            choices={scenario.choices}
+            onChoose={handleChoose}
+            locked={locked}
+          />
         </div>
       </div>
     </div>

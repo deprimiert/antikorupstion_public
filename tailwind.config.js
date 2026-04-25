@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -10,28 +11,32 @@ export default {
       },
       colors: {
         ink: {
-          950: '#0a0a0b',
-          900: '#111113',
-          800: '#17171a',
-          700: '#1f2024',
-          500: '#6b6d75',
-          300: '#c2c4cc',
-          100: '#ececef',
+          950: 'rgb(var(--ink-950) / <alpha-value>)',
+          900: 'rgb(var(--ink-900) / <alpha-value>)',
+          800: 'rgb(var(--ink-800) / <alpha-value>)',
+          700: 'rgb(var(--ink-700) / <alpha-value>)',
+          500: 'rgb(var(--ink-500) / <alpha-value>)',
+          300: 'rgb(var(--ink-300) / <alpha-value>)',
+          100: 'rgb(var(--ink-100) / <alpha-value>)',
         },
         accent: {
-          DEFAULT: '#e03a3a',
-          soft: '#b32e2e',
-          glow: '#ff5a5a',
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          soft: 'rgb(var(--accent-soft) / <alpha-value>)',
+          glow: 'rgb(var(--accent-glow) / <alpha-value>)',
         },
-        halol: '#5cc08a',
-        shadow: '#d4a24a',
+        halol: 'rgb(var(--halol) / <alpha-value>)',
+        shadow: 'rgb(var(--shadow) / <alpha-value>)',
+        invert: {
+          fg: 'rgb(var(--invert-fg) / <alpha-value>)',
+          bg: 'rgb(var(--invert-bg) / <alpha-value>)',
+        },
       },
       letterSpacing: {
         tightest: '-0.04em',
       },
       boxShadow: {
-        card: '0 20px 40px -15px rgba(0,0,0,0.55)',
-        inset: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+        card: 'var(--shadow-card)',
+        inset: 'var(--shadow-inset)',
       },
       keyframes: {
         grain: {

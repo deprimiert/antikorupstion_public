@@ -1,5 +1,8 @@
+import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useGameStore } from './store/gameStore'
+import { useUI } from './store/uiStore'
+import { useT } from './i18n'
 import { SCENARIOS } from './data/scenarios'
 import Intro from './components/Intro'
 import Scene from './components/Scene'
@@ -7,10 +10,16 @@ import Feedback from './components/Feedback'
 import Ending from './components/Ending'
 import StatsBar from './components/StatsBar'
 import ProgressRail from './components/ProgressRail'
+import Toolbar from './components/Toolbar'
 
 export default function App() {
   const phase = useGameStore((s) => s.phase)
   const sceneIndex = useGameStore((s) => s.sceneIndex)
+  const hydrate = useUI((s) => s.hydrate)
+
+  useEffect(() => {
+    hydrate()
+  }, [hydrate])
 
   return (
     <div className="relative min-h-[100dvh] bg-ink-950 text-ink-100 grain-overlay vignette">
@@ -75,25 +84,27 @@ export default function App() {
 }
 
 function Header({ phase, sceneIndex }) {
+  const t = useT()
   const show = phase === 'scene' || phase === 'feedback'
   return (
     <header className="relative z-10 border-b border-ink-800/70 bg-ink-950/80 backdrop-blur-md">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-5 md:px-10 lg:px-14 py-3.5 md:py-4">
-        <div className="flex items-center gap-3">
-          <div className="relative h-2.5 w-2.5">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-5 md:px-10 lg:px-14 py-3.5 md:py-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="relative h-2.5 w-2.5 shrink-0">
             <span className="absolute inset-0 rounded-full bg-accent animate-breath" />
           </div>
-          <span className="font-display text-lg font-semibold tracking-tightest">
-            Halol&nbsp;Yo‘l
+          <span className="font-display text-lg font-semibold tracking-tightest truncate">
+            {t('ui.appName')}
           </span>
           <span className="hidden md:inline text-ink-500 text-xs uppercase tracking-[0.22em] divider-dot">
-            Путь&nbsp;честности
+            {t('ui.appTagline')}
           </span>
         </div>
 
-        <div className="flex items-center gap-3 md:gap-5">
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
           {show && <StatsBar />}
           <ProgressRail total={SCENARIOS.length} current={sceneIndex} visible={show} />
+          <Toolbar />
         </div>
       </div>
     </header>
@@ -101,14 +112,13 @@ function Header({ phase, sceneIndex }) {
 }
 
 function Footer() {
+  const t = useT()
   return (
     <footer className="relative z-10 border-t border-ink-800/70 bg-ink-950/60">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-2 px-5 md:px-10 lg:px-14 py-4 md:flex-row md:items-center">
+        <p className="text-xs text-ink-500">{t('ui.hackathonTag')}</p>
         <p className="text-xs text-ink-500">
-          Хакатон-прототип · Антикоррупционное агентство RUZ
-        </p>
-        <p className="text-xs text-ink-500">
-          Горячая линия: <span className="text-ink-100">1144</span>
+          {t('ui.hotline')}: <span className="text-ink-100">{t('ui.hotlineNumber')}</span>
         </p>
       </div>
     </footer>

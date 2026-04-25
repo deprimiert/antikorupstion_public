@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
+import { useT } from '../i18n'
 
 export default function Timer({ seconds, onTimeout, keyId, locked }) {
+  const t = useT()
   const [remaining, setRemaining] = useState(seconds)
-  const progress = useMotionValue(1) // 1 -> 0
+  const progress = useMotionValue(1)
   const intervalRef = useRef(null)
   const timeoutRef = useRef(null)
   const animationRef = useRef(null)
 
   useEffect(() => {
-    // reset on new scene
     setRemaining(seconds)
     progress.set(1)
 
@@ -61,7 +62,7 @@ export default function Timer({ seconds, onTimeout, keyId, locked }) {
               danger ? 'bg-accent animate-breath' : 'bg-halol'
             }`}
           />
-          Время на решение
+          {t('ui.timer.label')}
         </div>
         <div
           className={`font-mono text-2xl font-semibold tabular-nums ${

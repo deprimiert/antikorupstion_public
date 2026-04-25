@@ -9,7 +9,7 @@ export default function PreEnding() {
   const behaviorTags = useGameStore((s) => s.behaviorTags)
   const finishToEnding = useGameStore((s) => s.finishToEnding)
   const t = useT()
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(-1)
 
   // Determine emotional tone based on stats
   let toneKey = 'gray' // default: серая зона
@@ -24,10 +24,11 @@ export default function PreEnding() {
 
   // Auto-advance lines with dramatic timing
   useEffect(() => {
-    const t1 = setTimeout(() => setStep(1), 1800)
-    const t2 = setTimeout(() => setStep(2), 4000)
-    const t3 = setTimeout(() => setStep(3), 6500)
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+    const t0 = setTimeout(() => setStep(0), 500)
+    const t1 = setTimeout(() => setStep(1), 3000)
+    const t2 = setTimeout(() => setStep(2), 5500)
+    const t3 = setTimeout(() => setStep(3), 8000)
+    return () => { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [])
 
   return (

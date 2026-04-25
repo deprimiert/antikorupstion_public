@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Read(//c/c/Users/user/Downloads/medic ai/**)",
+      "Read(//c/c/Users/user/Downloads/medic ai/anticorupsiya/**)",
+      "Read(//c/c/Users/user/Downloads/medic ai/anticorupsiya/src/**)"
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html,
+  body,
+  #root {
+    min-height: 100dvh;
+    background: #0a0a0b;
+  }
+  body {
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    color: theme('colors.ink.100');
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+  }
+  ::selection {
+    background: theme('colors.accent.DEFAULT');
+    color: #0a0a0b;
+  }
+}
+
+@layer utilities {
+  .grain-overlay::before {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    pointer-events: none;
+    z-index: 1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.35'/></svg>");
+    opacity: 0.25;
+    mix-blend-mode: overlay;
+    animation: grain 8s steps(8) infinite;
+  }
+
+  .vignette::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.55) 100%);
+  }
+
+  .btn-tactile {
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-tactile:active {
+    transform: translateY(1px) scale(0.985);
+  }
+
+  .divider-dot::before {
+    content: '·';
+    margin: 0 0.5rem;
+    color: theme('colors.ink.500');
+  }
+
+  .text-shimmer {
+    background: linear-gradient(
+      90deg,
+      theme('colors.ink.500') 0%,
+      theme('colors.ink.100') 50%,
+      theme('colors.ink.500') 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+}

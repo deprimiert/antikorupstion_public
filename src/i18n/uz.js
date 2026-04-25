@@ -9,7 +9,7 @@ export default {
     hackathonTag: 'Xakaton-prototipi · O‘zR Antikorrupsiya agentligi',
 
     intro: {
-      kicker: '11 sahna · 10 soniya · 4 yakun',
+      kicker: '11 sahna · 30 soniya · 4 yakun',
       headline_pre: 'Sen',
       headline_accent: 'nimani',
       headline_post: 'tanlaysan?',
@@ -19,7 +19,7 @@ export default {
       ctaSubtitle: 'Ro‘yxatdan o‘tishsiz. Bir o‘yin — 5 daqiqa.',
       legendKicker: 'Statistikani qanday o‘qiymiz',
       timerKicker: 'Taymer',
-      timerCopy: '10 soniya. Agar qaror qilmasang — sen o‘rningga boshqalar qaror qiladi. Bu ham javob.',
+      timerCopy: '30 soniya. Agar qaror qilmasang — sen o‘rningga boshqalar qaror qiladi. Bu ham javob.',
     },
 
     stats: {

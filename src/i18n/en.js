@@ -7,7 +7,7 @@ export default {
     hackathonTag: 'Hackathon prototype · Anti-Corruption Agency of Uzbekistan',
 
     intro: {
-      kicker: '11 scenes · 10 seconds · 4 endings',
+      kicker: '11 scenes · 30 seconds · 4 endings',
       headline_pre: 'What would',
       headline_accent: 'you',
       headline_post: 'choose?',
@@ -18,7 +18,7 @@ export default {
       legendKicker: 'Reading the stats',
       timerKicker: 'Timer',
       timerCopy:
-        '10 seconds. If you don’t decide — others decide for you. That’s an answer too.',
+        '30 seconds. If you don’t decide — others decide for you. That’s an answer too.',
     },
 
     stats: {

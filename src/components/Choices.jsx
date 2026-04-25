@@ -43,13 +43,7 @@ export default function Choices({ scenarioId, choices, onChoose, locked }) {
                   {subtitle && (
                     <div className="mt-1 text-sm text-ink-500 leading-relaxed">{subtitle}</div>
                   )}
-                  <div className="mt-3 flex items-center gap-2">
-                    <span
-                      className={`text-[10px] font-mono uppercase tracking-[0.22em] ${CHOICE_TYPE_TONE[c.type]}`}
-                    >
-                      {t(`ui.choiceType.${c.type}`)}
-                    </span>
-                  </div>
+
                 </div>
               </div>
               <span className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-ink-500 transition-all duration-300 group-hover:text-accent group-hover:translate-x-1">

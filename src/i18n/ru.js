@@ -57,6 +57,8 @@ export default {
       restart: 'Сыграть заново',
       hotlineLink: 'Телефон доверия 1144 →',
       decisionTimeout: 'Тайм-аут',
+      expandDecisions: 'Показать все',
+      collapseDecisions: 'Свернуть',
     },
     toolbar: {
       themeLabel: 'Тема',

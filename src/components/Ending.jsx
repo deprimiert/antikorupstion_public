@@ -11,6 +11,7 @@ export default function Ending() {
   const restart = useGameStore((s) => s.restart)
   const t = useT()
   const [copied, setCopied] = useState(false)
+  const [showAllDecisions, setShowAllDecisions] = useState(false)
 
   if (!ending) return null
 
@@ -136,7 +137,7 @@ export default function Ending() {
             {t('ui.ending.decisionsKicker')}
           </div>
           <ul className="mt-5 divide-y divide-ink-800/80">
-            {history.map((h, i) => {
+            {(showAllDecisions ? history : history.slice(0, 3)).map((h, i) => {
               const sceneTitle = t(`scenarios.${h.scenarioId}.title`)
               const choiceLabel = h.timedOut
                 ? t('ui.ending.decisionTimeout')
@@ -149,13 +150,6 @@ export default function Ending() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-3">
                       <div className="text-sm font-medium text-ink-100 truncate">{sceneTitle}</div>
-                      <span
-                        className={`text-[9px] font-mono uppercase tracking-[0.22em] shrink-0 ${
-                          CHOICE_TYPE_TONE[h.type] || 'text-ink-300'
-                        }`}
-                      >
-                        {t(`ui.choiceType.${h.type}`)}
-                      </span>
                     </div>
                     <div className="text-xs text-ink-500 truncate">{choiceLabel}</div>
                   </div>
@@ -163,6 +157,14 @@ export default function Ending() {
               )
             })}
           </ul>
+          {history.length > 3 && (
+            <button
+              onClick={() => setShowAllDecisions(!showAllDecisions)}
+              className="mt-4 flex w-full items-center justify-center rounded-xl bg-ink-800/30 py-3 text-sm font-medium text-ink-300 transition-colors hover:bg-ink-800/50 hover:text-ink-100"
+            >
+              {showAllDecisions ? t('ui.ending.collapseDecisions') : t('ui.ending.expandDecisions')}
+            </button>
+          )}
         </div>
       </div>
     </div>

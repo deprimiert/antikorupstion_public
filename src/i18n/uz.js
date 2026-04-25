@@ -57,6 +57,8 @@ export default {
       restart: 'Qaytadan o\'ynash',
       hotlineLink: 'Ishonch telefoni 1144 →',
       decisionTimeout: 'Taym-aut',
+      expandDecisions: 'Barchasini ko\'rish',
+      collapseDecisions: 'Qisqartirish',
     },
     toolbar: {
       themeLabel: 'Mavzu',

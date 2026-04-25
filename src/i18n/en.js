@@ -57,6 +57,8 @@ export default {
       restart: 'Play again',
       hotlineLink: 'Helpline 1144 →',
       decisionTimeout: 'Timeout',
+      expandDecisions: 'Show all',
+      collapseDecisions: 'Collapse',
     },
     toolbar: {
       themeLabel: 'Theme',

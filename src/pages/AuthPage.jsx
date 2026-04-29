@@ -161,7 +161,7 @@ function RegisterForm({ t, onSuccess }) {
   const { register } = useAuth()
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '',
-    password: '', birth_date: '', role: 'student',
+    password: '', birth_date: '',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -217,27 +217,6 @@ function RegisterForm({ t, onSuccess }) {
           )}
         </div>
         {bdErr && <p className="mt-1 text-xs text-accent">{bdErr}</p>}
-      </div>
-
-      {/* Роль */}
-      <div>
-        <label className={labelCls}>{t('ui.auth.roleLabel')}</label>
-        <div className="flex gap-2">
-          {[['student', t('ui.auth.roleStudent')], ['teacher', t('ui.auth.roleTeacher')]].map(([val, label]) => (
-            <button
-              key={val}
-              type="button"
-              onClick={() => setForm((f) => ({ ...f, role: val }))}
-              className={`flex-1 rounded-xl border py-2.5 text-sm font-medium transition-all ${
-                form.role === val
-                  ? 'border-accent bg-accent/10 text-accent'
-                  : 'border-ink-700 text-ink-500 hover:border-ink-500 hover:text-ink-300'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
       </div>
 
       {error && <p className="text-sm text-accent">{error}</p>}

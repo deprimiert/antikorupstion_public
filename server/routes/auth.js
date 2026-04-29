@@ -26,7 +26,7 @@ function validateBirthDate(dateStr) {
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-  const { email, password, first_name, last_name, birth_date, role } = req.body
+  const { email, password, first_name, last_name, birth_date } = req.body
 
   if (!email || !password || !first_name || !last_name || !birth_date) {
     return res.status(400).json({ error: 'Заполните все обязательные поля' })
@@ -41,9 +41,6 @@ router.post('/register', async (req, res) => {
   const bdError = validateBirthDate(birth_date)
   if (bdError) return res.status(400).json({ error: bdError })
 
-  // Только student и teacher доступны при регистрации
-  const assignedRole = role === 'teacher' ? 'teacher' : 'student'
-
   try {
     const existing = await query('SELECT id FROM users WHERE email=$1', [email.toLowerCase()])
     if (existing.rows.length > 0) {
@@ -53,8 +50,8 @@ router.post('/register', async (req, res) => {
     const password_hash = await bcrypt.hash(password, 10)
     const result = await query(
       `INSERT INTO users (email, password_hash, first_name, last_name, birth_date, role)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, first_name, last_name, birth_date, role, created_at`,
-      [email.toLowerCase(), password_hash, first_name.trim(), last_name.trim(), birth_date, assignedRole]
+       VALUES ($1, $2, $3, $4, $5, 'student') RETURNING id, email, first_name, last_name, birth_date, role, created_at`,
+      [email.toLowerCase(), password_hash, first_name.trim(), last_name.trim(), birth_date]
     )
     const user = result.rows[0]
     res.status(201).json({ token: signToken(user), user })

@@ -1,11 +1,17 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
+import { existsSync } from 'fs'
 import { initSchema } from './db.js'
 import authRouter from './routes/auth.js'
 import scenariosRouter from './routes/scenarios.js'
 import sessionsRouter from './routes/sessions.js'
 import gameRouter from './routes/game.js'
+
+const __dir = dirname(fileURLToPath(import.meta.url))
+const distPath = join(__dir, '..', 'dist')
 
 const app = express()
 const PORT = process.env.PORT || 4000
@@ -19,6 +25,15 @@ app.use('/api/sessions',  sessionsRouter)
 app.use('/api/game',      gameRouter)
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: new Date().toISOString() }))
+
+// Раздаём собранный фронтенд
+if (existsSync(distPath)) {
+  app.use(express.static(distPath))
+  // Все остальные GET — отдаём index.html (React Router)
+  app.get('*', (_req, res) => res.sendFile(join(distPath, 'index.html')))
+} else {
+  app.get('/', (_req, res) => res.json({ ok: true, api: '/api/*' }))
+}
 
 async function start() {
   if (!process.env.DATABASE_URL) {

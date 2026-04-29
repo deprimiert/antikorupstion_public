@@ -1,17 +1,16 @@
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
+import { useAuth } from '../store/authStore'
 import { useT } from '../i18n'
 
 export default function Intro() {
   const start = useGameStore((s) => s.start)
   const setPlayerName = useGameStore((s) => s.setPlayerName)
+  const { user } = useAuth()
   const t = useT()
-  const [name, setName] = useState('')
 
   function handleStart() {
-    const trimmed = name.trim()
-    if (trimmed) setPlayerName(trimmed)
+    if (user?.first_name) setPlayerName(user.first_name)
     start()
   }
 
@@ -59,31 +58,10 @@ export default function Intro() {
           {t('ui.intro.heroMotivation')}
         </motion.blockquote>
 
-        {/* Name input */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-8 max-w-sm"
-        >
-          <label className="text-[11px] font-mono uppercase tracking-[0.25em] text-ink-500 block mb-2">
-            {t('ui.intro.nameLabel')}
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-            placeholder={t('ui.intro.namePlaceholder')}
-            maxLength={24}
-            className="w-full rounded-xl border border-ink-700 bg-ink-900/80 px-4 py-3 text-base text-ink-100 placeholder:text-ink-600 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40 transition-colors"
-          />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6"
         >
           <button

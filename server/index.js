@@ -21,11 +21,19 @@ app.use('/api/game',      gameRouter)
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: new Date().toISOString() }))
 
 async function start() {
+  if (!process.env.DATABASE_URL) {
+    console.error('[server] FATAL: DATABASE_URL is not set. Add it in Railway → Variables.')
+    process.exit(1)
+  }
+  if (!process.env.JWT_SECRET) {
+    console.error('[server] FATAL: JWT_SECRET is not set. Add it in Railway → Variables.')
+    process.exit(1)
+  }
   try {
     await initSchema()
-    app.listen(PORT, () => console.log(`[server] http://localhost:${PORT}`))
+    app.listen(PORT, '0.0.0.0', () => console.log(`[server] listening on port ${PORT}`))
   } catch (err) {
-    console.error('[server] Failed to start:', err)
+    console.error('[server] Failed to start:', err.message)
     process.exit(1)
   }
 }

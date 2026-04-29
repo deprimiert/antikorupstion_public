@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { existsSync } from 'fs'
 import { initSchema } from './db.js'
+import { seedBuiltIn } from './seed.js'
 import authRouter from './routes/auth.js'
 import scenariosRouter from './routes/scenarios.js'
 import sessionsRouter from './routes/sessions.js'
@@ -46,6 +47,7 @@ async function start() {
   }
   try {
     await initSchema()
+    await seedBuiltIn()
     app.listen(PORT, '0.0.0.0', () => console.log(`[server] listening on port ${PORT}`))
   } catch (err) {
     console.error('[server] Failed to start:', err.message)

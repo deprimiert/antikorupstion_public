@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useGameStore } from './store/gameStore'
 import { useUI } from './store/uiStore'
+import { useAuth } from './store/authStore'
 import { useT } from './i18n'
 import { SCENARIOS, TOTAL_ACTS, actOf } from './data/scenarios'
 import Intro from './components/Intro'
@@ -98,6 +100,8 @@ export default function App() {
 
 function Header({ phase, currentScenarioId }) {
   const t = useT()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const show = phase === 'scene' || phase === 'feedback'
   const actNumber = currentScenarioId ? actOf(currentScenarioId) : 1
   return (
@@ -119,6 +123,14 @@ function Header({ phase, currentScenarioId }) {
           {show && <StatsBar />}
           <ProgressRail total={TOTAL_ACTS} current={actNumber - 1} visible={show} />
           <Toolbar />
+          {user && (
+            <button
+              onClick={() => { logout(); navigate('/auth') }}
+              className="hidden md:flex items-center gap-1.5 rounded-lg border border-ink-700 px-2.5 py-1.5 text-xs text-ink-500 hover:text-ink-200 hover:border-ink-500 transition-colors"
+            >
+              {user.first_name} · Выйти
+            </button>
+          )}
         </div>
       </div>
     </header>

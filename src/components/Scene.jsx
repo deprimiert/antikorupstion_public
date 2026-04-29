@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
-import { useT } from '../i18n'
+import { useT, useLang } from '../i18n'
 import { findChainPrevChoice, TOTAL_ACTS, actOf } from '../data/scenarios'
 import Timer from './Timer'
 import Choices from './Choices'
@@ -12,7 +12,9 @@ export default function Scene({ scenario }) {
   const choose = useGameStore((s) => s.choose)
   const timeoutFn = useGameStore((s) => s.timeout)
   const history = useGameStore((s) => s.history)
+  const scenarioData = useGameStore((s) => s.scenarioData)
   const t = useT()
+  const lang = useLang()
   const [locked, setLocked] = useState(false)
   const lockedRef = useRef(false)
 
@@ -35,29 +37,41 @@ export default function Scene({ scenario }) {
     choose(choice)
   }
 
-  // Branching narrator: подменяем текст исходя из id+type последнего выбора игрока.
-  // Сначала ищем по `narratorByPrev.<choiceId>` (точное совпадение по предыдущему ответу),
-  // потом fallback по типу `narratorByType.<type>` (briber/principled/silent…),
-  // иначе — общий `narrator`.
-  let narrator = t(`scenarios.${scenario.id}.narrator`)
+  // Resolve DB texts for this act (with language fallback)
+  const dbAct = scenarioData?.actsMap?.[scenario.id]
+  const dbTexts = dbAct?.texts?.[lang] || dbAct?.texts?.uz || {}
+
+  // Branching narrator: DB texts take priority, then i18n
+  let narrator = dbTexts.narrator || t(`scenarios.${scenario.id}.narrator`)
   const prev = history.length > 0 ? history[history.length - 1] : null
   if (prev) {
-    const byChoiceKey = `scenarios.${scenario.id}.narratorByPrev.${prev.choiceId}`
-    const byChoice = t(byChoiceKey)
-    if (byChoice && byChoice !== byChoiceKey) {
-      narrator = byChoice
+    const dbByPrev = dbTexts.narratorByPrev?.[prev.choiceId]
+    if (dbByPrev) {
+      narrator = dbByPrev
     } else {
-      const byTypeKey = `scenarios.${scenario.id}.narratorByType.${prev.type}`
-      const byType = t(byTypeKey)
-      if (byType && byType !== byTypeKey) narrator = byType
+      const dbByType = dbTexts.narratorByType?.[prev.type]
+      if (dbByType) {
+        narrator = dbByType
+      } else {
+        const byChoiceKey = `scenarios.${scenario.id}.narratorByPrev.${prev.choiceId}`
+        const byChoice = t(byChoiceKey)
+        if (byChoice && byChoice !== byChoiceKey) {
+          narrator = byChoice
+        } else {
+          const byTypeKey = `scenarios.${scenario.id}.narratorByType.${prev.type}`
+          const byType = t(byTypeKey)
+          if (byType && byType !== byTypeKey) narrator = byType
+        }
+      }
     }
   }
 
-  const stage = t(`scenarios.${scenario.id}.stage`)
-  const setting = t(`scenarios.${scenario.id}.setting`)
-  const title = t(`scenarios.${scenario.id}.title`)
-  const quote = t(`scenarios.${scenario.id}.quote`)
-  const realStoryNote = t(`scenarios.${scenario.id}.realStoryNote`)
+  const stage = dbTexts.stage || t(`scenarios.${scenario.id}.stage`)
+  const setting = dbTexts.setting || t(`scenarios.${scenario.id}.setting`)
+  const title = dbTexts.title || t(`scenarios.${scenario.id}.title`)
+  const quote = dbTexts.quote || t(`scenarios.${scenario.id}.quote`)
+  const rawRSN = dbTexts.realStoryNote || t(`scenarios.${scenario.id}.realStoryNote`)
+  const realStoryNote = rawRSN && rawRSN !== `scenarios.${scenario.id}.realStoryNote` ? rawRSN : null
   const sceneCounter = t('ui.scene.sceneOf', { n: actOf(scenario.id), total: TOTAL_ACTS })
 
   return (
@@ -109,7 +123,7 @@ export default function Scene({ scenario }) {
           >
             <span className="h-1.5 w-1.5 rounded-full bg-shadow animate-breath" />
             {t('ui.scene.basedOnReal')}
-            {realStoryNote && realStoryNote !== `scenarios.${scenario.id}.realStoryNote` && (
+            {realStoryNote && (
               <span className="hidden sm:inline text-shadow/80">— {realStoryNote}</span>
             )}
           </motion.div>

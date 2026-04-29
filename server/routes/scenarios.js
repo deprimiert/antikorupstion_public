@@ -42,6 +42,47 @@ router.get('/published', requireAuth, async (req, res) => {
   }
 })
 
+// GET /api/scenarios/active — первый опубликованный сценарий для игры (с текстами)
+router.get('/active', requireAuth, async (req, res) => {
+  try {
+    const scenRes = await query(
+      `SELECT * FROM scenarios WHERE is_published = true ORDER BY created_at ASC LIMIT 1`
+    )
+    if (!scenRes.rows[0]) return res.status(404).json({ error: 'No published scenario' })
+    const scenario = scenRes.rows[0]
+
+    const actsRes = await query(
+      'SELECT * FROM acts WHERE scenario_id=$1 ORDER BY act_number', [scenario.id]
+    )
+    const acts = actsRes.rows
+    if (acts.length === 0) return res.json({ scenario, acts: [], endings: [] })
+
+    const actIds = acts.map((a) => a.id)
+    const choicesRes = await query(
+      'SELECT * FROM choices WHERE act_id = ANY($1) ORDER BY choice_key', [actIds]
+    )
+    const endingsRes = await query(
+      'SELECT * FROM scenario_endings WHERE scenario_id=$1 ORDER BY condition_order', [scenario.id]
+    )
+
+    const choicesByAct = {}
+    for (const c of choicesRes.rows) {
+      if (!choicesByAct[c.act_id]) choicesByAct[c.act_id] = []
+      choicesByAct[c.act_id].push(c)
+    }
+
+    const actsWithChoices = acts.map((a) => ({
+      ...a,
+      choices: choicesByAct[a.id] || [],
+    }))
+
+    res.json({ scenario, acts: actsWithChoices, endings: endingsRes.rows })
+  } catch (err) {
+    console.error('[scenarios GET /active]', err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
 // GET /api/scenarios/:id — полный сценарий с актами, выборами, ветвлением, финалами
 router.get('/:id', requireAuth, async (req, res) => {
   try {

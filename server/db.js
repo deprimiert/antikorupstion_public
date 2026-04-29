@@ -20,6 +20,13 @@ export const pool = new Pool({
 export async function initSchema() {
   const sql = readFileSync(join(__dir, 'schema.sql'), 'utf8')
   await pool.query(sql)
+  // Migrations: add multilingual text columns
+  await pool.query(`
+    ALTER TABLE acts ADD COLUMN IF NOT EXISTS act_key TEXT;
+    ALTER TABLE acts ADD COLUMN IF NOT EXISTS texts JSONB NOT NULL DEFAULT '{}';
+    ALTER TABLE choices ADD COLUMN IF NOT EXISTS texts JSONB NOT NULL DEFAULT '{}';
+    ALTER TABLE scenario_endings ADD COLUMN IF NOT EXISTS texts JSONB NOT NULL DEFAULT '{}';
+  `)
   console.log('[db] schema applied')
 }
 

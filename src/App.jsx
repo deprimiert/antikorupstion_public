@@ -19,11 +19,13 @@ export default function App() {
   const phase = useGameStore((s) => s.phase)
   const sceneIndex = useGameStore((s) => s.sceneIndex)
   const currentScenarioId = useGameStore((s) => s.currentScenarioId)
+  const loadScenario = useGameStore((s) => s.loadScenario)
   const hydrate = useUI((s) => s.hydrate)
 
   useEffect(() => {
     hydrate()
-  }, [hydrate])
+    loadScenario()
+  }, [hydrate, loadScenario])
 
   return (
     <div className="relative min-h-[100dvh] bg-ink-950 text-ink-100 grain-overlay vignette">
@@ -128,7 +130,7 @@ function Header({ phase, currentScenarioId }) {
               onClick={() => { logout(); navigate('/auth') }}
               className="hidden md:flex items-center gap-1.5 rounded-lg border border-ink-700 px-2.5 py-1.5 text-xs text-ink-500 hover:text-ink-200 hover:border-ink-500 transition-colors"
             >
-              {user.first_name} · Выйти
+              {user.first_name} · {t('ui.teacher.logout')}
             </button>
           )}
         </div>

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { SCENARIOS, START_SCENARIO_ID, pickNextScenarioId } from '../data/scenarios'
 import { computeEnding } from '../data/endings'
+import { authFetch } from './authStore'
 
 // Reputation — 4-я скрытая стата. В StatsBar её нет, открывается только в финале.
 const INITIAL_STATS = { integrity: 50, money: 20, risk: 10, reputation: 50 }
@@ -52,6 +53,33 @@ export const useGameStore = create((set, get) => ({
   playerName: '',
   behaviorTags: { dominant: 'neutral', counts: {} },
   sessionId: null,          // server session id (заполняется при /api/session)
+  scenarioData: null,       // { id, actsMap: {actKey: {..., choicesMap: {key: choice}}}, endingsMap: {...} }
+
+  async loadScenario() {
+    try {
+      const res = await authFetch('/api/scenarios/active')
+      if (!res.ok) return
+      const { scenario, acts, endings } = await res.json()
+      if (!scenario || !acts) return
+
+      const actsMap = {}
+      for (const act of acts) {
+        if (!act.act_key) continue
+        const choicesMap = {}
+        for (const c of act.choices || []) {
+          choicesMap[c.choice_key] = c
+        }
+        actsMap[act.act_key] = { ...act, choicesMap }
+      }
+      const endingsMap = {}
+      for (const e of endings || []) {
+        endingsMap[e.ending_key] = e
+      }
+      set({ scenarioData: { id: scenario.id, actsMap, endingsMap } })
+    } catch (err) {
+      console.error('[gameStore] loadScenario failed:', err)
+    }
+  },
 
   setPlayerName(name) {
     set({ playerName: name })

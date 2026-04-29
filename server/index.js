@@ -29,8 +29,8 @@ app.get('/api/health', (_req, res) => res.json({ ok: true, ts: new Date().toISOS
 // Раздаём собранный фронтенд
 if (existsSync(distPath)) {
   app.use(express.static(distPath))
-  // Все остальные GET — отдаём index.html (React Router)
-  app.get('*', (_req, res) => res.sendFile(join(distPath, 'index.html')))
+  // Все остальные маршруты — отдаём index.html (React Router)
+  app.use((_req, res) => res.sendFile(join(distPath, 'index.html')))
 } else {
   app.get('/', (_req, res) => res.json({ ok: true, api: '/api/*' }))
 }

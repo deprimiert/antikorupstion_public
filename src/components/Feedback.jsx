@@ -59,9 +59,8 @@ export default function Feedback() {
           className="mt-8 flex flex-wrap items-center gap-2"
         >
           <span
-            className={`text-[10px] font-mono uppercase tracking-[0.22em] ${
-              CHOICE_TYPE_TONE[lastEntry.type] || 'text-ink-300'
-            }`}
+            className={`text-[10px] font-mono uppercase tracking-[0.22em] ${CHOICE_TYPE_TONE[lastEntry.type] || 'text-ink-300'
+              }`}
           >
             {t(`ui.choiceType.${lastEntry.type}`)}
           </span>

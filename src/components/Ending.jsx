@@ -31,7 +31,7 @@ export default function Ending() {
       await navigator.clipboard.writeText(text)
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
-    } catch {}
+    } catch { }
   }
 
   return (

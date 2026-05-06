@@ -8,7 +8,19 @@
       "Read(//c/c/Users/user/Downloads/medic ai/**)",
       "Read(//c/c/Users/user/Downloads/medic ai/anticorupsiya/**)",
       "Read(//c/c/Users/user/Downloads/medic ai/anticorupsiya/src/**)",
-      "Bash(PORT=4173 timeout 6 npm run start)"
+      "Bash(PORT=4173 timeout 6 npm run start)",
+      "Bash(node --input-type=module --check)",
+      "Bash(timeout 15 node server/index.js)",
+      "Bash(node -e ' *)",
+      "Bash(node server/index.js)",
+      "Bash(curl -s -X POST http://localhost:4000/api/auth/register -H 'Content-Type: application/json' -d '{\"email\":\"teacher@test.com\",\"password\":\"123456\",\"first_name\":\"Алишер\",\"last_name\":\"Навоий\",\"birth_date\":\"1990-05-15\",\"role\":\"teacher\"}')",
+      "Bash(node -e \"process.stdin.resume\\(\\);let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const r=JSON.parse\\(d\\);console.log\\('role:',r.user?.role,'name:',r.user?.first_name,r.user?.last_name,'token exists:',!!r.token\\)}\\)\")",
+      "Bash(pkill -f \"node server/index.js\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Bash(npx vite *)"
     ]
   }
 }
